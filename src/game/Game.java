@@ -8,12 +8,12 @@ import java.util.Arrays;
 
 public class Game {
 
-    private static FileManager fileManager; // Useful file manager.
+    private static FileManager fileManager; 
     private static Text text = new Text();
     private static Battler battler = new Battler();
 
-    private static String[] validCommands = {"", "help", "battle", "list", "credits", "profile"};
-    private static String[] battleCommands = {"battlerandom", "list", "back"};
+    private static String[] validCommands = {"", "help", "battle", "list", "credits", "profile", "new"};
+    private static String[] battleCommands = {"". "battlerandom", "list", "back"};
     private static String name = "default";
 
     private static boolean inBattleMenu = false;
@@ -109,11 +109,60 @@ public class Game {
                 text.print("list - Prints all loaded Pokemon in memory.");
                 text.print("help - Display this menu.");
                 text.print("profile - Displays your profile info.");
+                text.print("new - Create a new Pokemon.");
                 text.blank();
             }
             else if(input.equalsIgnoreCase("profile")){
                 text.print("Your profile name is \"" + name + "\" ");
                 text.blank();
+            }
+            else if(input.equalsIgnoreCase("new")){
+                
+                try{
+                    text.blank();
+                    text.print("Here you can create new Pokemon and save them to your library.")
+                    text.blank();
+                    String name = text.getStringInput("Enter Pokemon name to create: ");
+                    String type = text.getStringInput("Enter type: ");
+                    int hp = text.getStringInput("Enter HP: ");
+                    String p_attk_one = text.getStringInput("Attack 1 [REQUIRED]: ");
+                    String p_attk_two = text.getStringInput("Attack 2: ");
+                    String p_attk_three = text.getStringInput("Attack 3: ");
+                    String p_attk_four = text.getStringInput("Attack 4: ");
+                    String filename = text.getStringInput("Enter filename (without type): ");
+                    int retType = checkValidEntry(name, hp, p_attk_one, type, filename);
+                    switch(retType){
+                        case 0:
+                            //create new Pokemon
+                            break;
+                        case 1:
+                            text.print("Empty filename!");
+                            break;
+                        case 2:
+                            text.print("Filename is too long. It must be at most 16 characters long.");
+                            break;
+                        case 3:
+                            text.print("Your Pokemon must have a name.");
+                            break;
+                        case 4:
+                            text.print("Pokemon name is too long. It must be at most 16 characters long.");
+                            break;
+                        case 5:
+                            text.print("This Pokemon needs atleast one valid attack.");
+                            break;
+                        case 6:
+                            text.print("Your Pokemon cannot start with zero HP. It must be at most 1.");
+                            break;
+                        default:
+                            text.print("Error: Process broke into default from switch statement");
+                            break;
+                    }
+                    //done.
+                    
+                }catch(Exception e){
+                    text.print("An error occurred while trying to set Pokemon info.");
+                }
+                
             }
         }
         while(inBattleMenu) {
@@ -166,6 +215,33 @@ public class Game {
                 text.print("Pokemon name not found in directory!");
             }
 
+        }
+    }
+    
+    /* Checks if player's entries are valid to create a new Pokemon */
+    /* Returns 0 normally, else returns specific error code to diagnose error */
+    public static int checkValidEntry(String name, int hp, String p_attk_one, String type, String filename){
+        //TODO: Check for type and valid attack attributed to p_attk_one
+        if(!filename.equalsIgnoreCase("") && !p_attk_one.equalsIgnoreCase("") && hp != 0 && !name.length > 16 && !name.equalsIgnoreCase("")){
+            return 0; //Entry is valid                
+        }
+        else if(filename.equalsIgnoreCase("")){
+            return 1; //Empty filename
+        }
+        else if(filename.length > 16){
+            return 2; //Filename too long
+        }
+        else if(name.equalsIgnoreCase("")){
+            return 3; //Empty name
+        }
+        else if(name.length > 16){
+            return 4; //Name is too long
+        }
+        else if(p_attk_one.equalsIgnoreCase("")){
+            return 5; //Attack name is empty
+        }
+        else if(hp == 0){
+            return 6; //Invalid amount of hp
         }
     }
 
