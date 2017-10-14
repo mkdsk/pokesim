@@ -6,13 +6,12 @@ PokeSim is a new version of the original Pokemon Simulator I wrote in Python ove
 # Features
 ---
 - Simulation of Pokemon style turn based battles
-- HP, Abilities, Held Items, Attacks, Mega Forms, Weather Conditions
+- HP, Held Items, Attacks, Weather Conditions
 - Custom Pokemon creation ingame
 - Multiplayer battles
 - AI battles
-- EVs and IVs
-- Stats and Natures
-- Accurate damage calculation
+- Stats 
+- Accurate damage calculation 
 - Attack evasion
 - Saving and viewing of profiles, stat tracking
 
