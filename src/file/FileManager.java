@@ -20,6 +20,7 @@ public class FileManager {
     /*
     Returns a random .poke file from the directory.
      */
+    //TODO: Add isValid() before returning file
     public File getRandomPokemon() {
         File[] list = gameDirectory.listFiles();
         int length = list.length;
