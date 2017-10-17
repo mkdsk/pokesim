@@ -8,12 +8,13 @@ import java.util.Arrays;
 
 public class Game {
 
-    private static FileManager fileManager; 
+    private static FileManager fileManager; // Useful file manager.
     private static Text text = new Text();
     private static Battler battler = new Battler();
 
-    private static String[] validCommands = {"", "help", "battle", "list", "credits", "profile", "new"};
-    private static String[] battleCommands = {"". "battlerandom", "list", "back"};
+    private static String[] validTypes = {"Bug", "Dragon", "Ice", "Fighting", "Fire", "Flying", "Grass", "Ghost", "Ground", "Electric", "Normal", "Poison", "Psychic", "Rock", "Water"};
+    private static String[] validCommands = {"", "help", "battle", "list", "credits", "profile"};
+    private static String[] battleCommands = {"random", "list", "back", "new", "edit"};
     private static String name = "default";
 
     private static boolean inBattleMenu = false;
@@ -44,14 +45,23 @@ public class Game {
                 text.print(fileManager.getPkmn() + " Pokemon initialized.");
             }
             text.seperator();
-            gameLoop();
+            text.print("Please enter a name for your profile: ");
+            String inp = text.getStringInput("> ");
+            if(inp.equals("")){
+                name = "debug";
+            }else{
+                name = inp;
+            }
+            text.print("Profile name set as \"" + name + "\"");
+            text.blank();
+            gameLoop(false);
 
-        }catch (Exception e){ // Some sort of error occurred??
+        }catch (Exception e){
             text.seperator();
+            e.printStackTrace();
+            text.seperator();
+            text.error("\nAn unknown error has occurred while running the game.");
             text.error(e.getMessage());
-            text.seperator();
-            text.error("\nAn unknown error has occurred while attempting to start the game.");
-            text.error("Please contact xxq if you believe this is an error.");
         }
     }
 
@@ -60,28 +70,28 @@ public class Game {
     this function. It handles everything from the menus
     to the battles.
      */
-    public static void gameLoop(){ //TODO: Add setPoke command to set current party pokemon, also add battle <pokemon> command
-        text.print("Please enter a name for your profile: ");
-        String inp = text.getStringInput("> ");
-        if(inp.equals("")){
-            name = "debug";
+    public static void gameLoop(boolean battle){ //TODO: Add setPoke command to set current party pokemon, also add battle <pokemon> command
+        if(battle){
+            inBattleMenu = true;
+            inMenu = false;
         }else{
-            name = inp;
+            inMenu = true;
+            inBattleMenu = false;
         }
-        text.print("Profile name set as \"" + name + "\"");
-        text.blank();
-        inMenu = true;
+
         while(inMenu){
             text.print("Write \"help\" for command info.");
             String input = text.getStringInput("> ");
             if(!Arrays.asList(validCommands).contains(input)){ // invalid command!
                 text.print("Invalid command!");
             }
+
             else if(input.equalsIgnoreCase("battle")){
                 text.print("Entering battle menu...");
                 inMenu = false;
                 inBattleMenu = true;
             }
+
             else if(input.equalsIgnoreCase("list")){
                 //prints all loaded pokemon
                 text.print("Loading Pokemon list...");
@@ -100,87 +110,44 @@ public class Game {
                 }
                 text.blank();
             }
+
             else if(input.equalsIgnoreCase("credits")){
                 text.print("PokeSim v" + GAME_VERSION + " created by xxq.");
                 text.blank();
             }
+
             else if(input.equalsIgnoreCase("help")){
                 text.print("battle - Opens the battle menu. Used to battle certain pokemon.");
                 text.print("list - Prints all loaded Pokemon in memory.");
                 text.print("help - Display this menu.");
                 text.print("profile - Displays your profile info.");
-                text.print("new - Create a new Pokemon.");
                 text.blank();
             }
+
             else if(input.equalsIgnoreCase("profile")){
                 text.print("Your profile name is \"" + name + "\" ");
                 text.blank();
-            }
-            else if(input.equalsIgnoreCase("new")){
-                
-                try{
-                    text.blank();
-                    text.print("Here you can create new Pokemon and save them to your library.")
-                    text.blank();
-                    String name = text.getStringInput("Enter Pokemon name to create: ");
-                    String type = text.getStringInput("Enter type: ");
-                    int hp = text.getStringInput("Enter HP: ");
-                    String p_attk_one = text.getStringInput("Attack 1 [REQUIRED]: ");
-                    String p_attk_two = text.getStringInput("Attack 2: ");
-                    String p_attk_three = text.getStringInput("Attack 3: ");
-                    String p_attk_four = text.getStringInput("Attack 4: ");
-                    String filename = text.getStringInput("Enter filename (without type): ");
-                    int retType = checkValidEntry(name, hp, p_attk_one, type, filename);
-                    switch(retType){
-                        case 0:
-                            //create new Pokemon
-                            break;
-                        case 1:
-                            text.print("Empty filename!");
-                            break;
-                        case 2:
-                            text.print("Filename is too long. It must be at most 16 characters long.");
-                            break;
-                        case 3:
-                            text.print("Your Pokemon must have a name.");
-                            break;
-                        case 4:
-                            text.print("Pokemon name is too long. It must be at most 16 characters long.");
-                            break;
-                        case 5:
-                            text.print("This Pokemon needs atleast one valid attack.");
-                            break;
-                        case 6:
-                            text.print("Your Pokemon cannot start with zero HP. It must be at most 1.");
-                            break;
-                        default:
-                            text.print("Error: Process broke into default from switch statement");
-                            break;
-                    }
-                    //done.
-                    
-                }catch(Exception e){
-                    text.print("An error occurred while trying to set Pokemon info.");
-                }
-                
             }
         }
         while(inBattleMenu) {
             text.print("Write \"help\" for command info.");
             String input = text.getStringInput("BATTLE> ");
+
             if (input.equalsIgnoreCase("help")) {
                 text.print("- Type any Pokemon filename to battle it.");
-                text.print("- battlerandom to battle a random Pokemon.");
+                text.print("- random to battle a random Pokemon.");
                 text.print("- back to return to the main menu.");
                 text.print("- list to list the available Pokemon to battle");
                 text.blank();
+
             } else if (input.equalsIgnoreCase("back")) {
                 text.print("Returning to main menu...");
-                inBattleMenu = false;
-                inMenu = true;
                 text.blank();
-            } else if (input.equalsIgnoreCase("battlerandom")) {
+                gameLoop(false);
+
+            } else if (input.equalsIgnoreCase("random")) {
                 battler.battle(fileManager.getRandomPokemon());
+
             } else if (input.equalsIgnoreCase("list")) {
                 //prints all loaded pokemon
                 text.print("Loading Pokemon list...");
@@ -198,50 +165,66 @@ public class Game {
                     text.print("No Pokemon were found in your directory.");
                 }
                 text.blank();
-            }else{
-                //user wants to battle pokemon
-                //input = pokemon to battle
-                //check if there is pokemon in directory to battle named the string the user gave, if theres not,
-                //give invalid command message.
-                File[] list = fileManager.gameDirectory.listFiles();
-                for(File file : list){
-                    String filename = file.getName();
-                    if(filename.endsWith(".poke")){
-                        if(fileManager.getName(file).equalsIgnoreCase(input)){
-                            battler.battle(file);
-                        }
-                    }
+
+            } else if(input.equalsIgnoreCase("new")){
+                String in = text.getStringInput("Create new Pokemon? (y/n): ");
+                while(!in.equalsIgnoreCase("y") && !in.equalsIgnoreCase("n") && !in.equalsIgnoreCase("back")){
+                    in = text.getStringInput("Create new Pokemon? (y/n): ");
                 }
-                text.print("Pokemon name not found in directory!");
+                if(in.equalsIgnoreCase("back")){
+                    gameLoop(true);
+                }
+                if(in.equalsIgnoreCase("y")){
+                    try{
+                        String name = text.getStringInput("Name?: ");
+                        String type = text.getStringInput("Type?: ");
+                        String hp = text.getStringInput("HP?: ");
+                        String attackone = text.getStringInput("Attack?: ");
+                        String attacktwo = text.getStringInput("Attack?: ");
+                        String attackthree = text.getStringInput("Attack?: ");
+                        String attackfour = text.getStringInput("Attack?: ");
+                        //TODO: Check if attackone is not valid aswell.
+                        while(name.length() > 16 || name.length() < 1 || !Arrays.asList(validTypes).contains(type) || Integer.parseInt(hp) < 1){
+                            if(name.length() > 16 || name.length() < 1){
+                                text.print("Name must have between 1 and 16 characters.");
+                                text.blank();
+                            }
+                            if(!Arrays.asList(validTypes).contains(type)){
+                                text.print("\"" + type + "\" is not a valid type.");
+                                text.blank();
+                            }
+                            if(Integer.parseInt(hp) < 1){
+                                text.print("HP must be between 1 and 2147483647.");
+                                text.blank();
+                            }
+                            name = text.getStringInput("Name?: ");
+                            type = text.getStringInput("Type?: ");
+                            hp = text.getStringInput("HP?: ");
+                            attackone = text.getStringInput("Attack?: ");
+                            attacktwo = text.getStringInput("Attack?: ");
+                            attackthree = text.getStringInput("Attack?: ");
+                            attackfour = text.getStringInput("Attack?: ");
+                        }
+                        //save file now, it is valid.
+                        text.print("saving file.");
+                    }catch(Exception e){
+                        text.print("HP must be a number between 1 and 2147483647.");
+                        gameLoop(true);
+                    }
+
+                }
+                if(in.equalsIgnoreCase("n")){
+                    gameLoop(true);
+                }
+
+            } else if(input.equalsIgnoreCase("edit")){
+                text.print("");
             }
 
-        }
-    }
-    
-    /* Checks if player's entries are valid to create a new Pokemon */
-    /* Returns 0 normally, else returns specific error code to diagnose error */
-    public static int checkValidEntry(String name, int hp, String p_attk_one, String type, String filename){
-        //TODO: Check for type and valid attack attributed to p_attk_one
-        if(!filename.equalsIgnoreCase("") && !p_attk_one.equalsIgnoreCase("") && hp != 0 && !name.length > 16 && !name.equalsIgnoreCase("")){
-            return 0; //Entry is valid                
-        }
-        else if(filename.equalsIgnoreCase("")){
-            return 1; //Empty filename
-        }
-        else if(filename.length > 16){
-            return 2; //Filename too long
-        }
-        else if(name.equalsIgnoreCase("")){
-            return 3; //Empty name
-        }
-        else if(name.length > 16){
-            return 4; //Name is too long
-        }
-        else if(p_attk_one.equalsIgnoreCase("")){
-            return 5; //Attack name is empty
-        }
-        else if(hp == 0){
-            return 6; //Invalid amount of hp
+            else if(!Arrays.asList(battleCommands).contains(input)){
+                text.print("Invalid command!");
+            }
+
         }
     }
 
