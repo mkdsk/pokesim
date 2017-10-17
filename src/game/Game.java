@@ -1,243 +1,258 @@
-package game;
+package file;
 
-import battle.Battler;
-import file.FileManager;
-import text.Text;
+import game.Game;
+import java.io.BufferedReader;
 import java.io.File;
-import java.util.Arrays;
+import java.io.FileReader;
+import java.util.Random;
 
-public class Game {
+public class FileManager {
 
-    private static FileManager fileManager; // Useful file manager.
-    private static Text text = new Text();
-    private static Battler battler = new Battler();
+    public File gameDirectory;
 
-    private static String[] validTypes = {"Bug", "Dragon", "Ice", "Fighting", "Fire", "Flying", "Grass", "Ghost", "Ground", "Electric", "Normal", "Poison", "Psychic", "Rock", "Water"};
-    private static String[] validCommands = {"", "help", "battle", "list", "credits", "profile"};
-    private static String[] battleCommands = {"random", "list", "back", "new", "edit"};
-    private static String name = "default";
-
-    private static boolean inBattleMenu = false;
-    private static boolean inMenu = false; // Determines whether we should run the menu loop
-
-    public static final String GAME_NAME = "PokeSim";
-    public static final String GAME_REL_VER = "Pre-Alpha";
-    public static final String GAME_VERSION = "0.2";
-
-    public static void main(String[] args){
-        init();
-    }
-
-    public static void init(){
-        try{
-            fileManager = new FileManager();
-            text.seperator();
-            text.print("Starting " + GAME_NAME + " " + GAME_REL_VER + " v" + GAME_VERSION);
-            text.seperator();
-            text.print("Initalized File Manager...");
-            text.print("Initalized Text functions...");
-            text.print("Loading Pokemon...");
-            if(fileManager.getPkmn() == 0){
-                text.error("Zero Pokemon were found in your PokeSim directory. Make sure");
-                text.error("You have downloaded the first gen pack and installed it in the");
-                text.error("Proper directory. If the error persists, contact xxq on Discord.");
-            }else {
-                text.print(fileManager.getPkmn() + " Pokemon initialized.");
-            }
-            text.seperator();
-            text.print("Please enter a name for your profile: ");
-            String inp = text.getStringInput("> ");
-            if(inp.equals("")){
-                name = "debug";
-            }else{
-                name = inp;
-            }
-            text.print("Profile name set as \"" + name + "\"");
-            text.blank();
-            gameLoop(false);
-
-        }catch (Exception e){
-            text.seperator();
-            e.printStackTrace();
-            text.seperator();
-            text.error("\nAn unknown error has occurred while running the game.");
-            text.error(e.getMessage());
+    public FileManager() {
+        gameDirectory = new File("C:" + File.separator + "PokeSim");
+        if (!gameDirectory.exists()) {
+            gameDirectory.mkdirs();
         }
     }
 
     /*
-    After the game has started, everything happens within
-    this function. It handles everything from the menus
-    to the battles.
+    Returns a random .poke file from the directory.
      */
-    public static void gameLoop(boolean battle){ //TODO: Add setPoke command to set current party pokemon, also add battle <pokemon> command
-        if(battle){
-            inBattleMenu = true;
-            inMenu = false;
+    public File getRandomPokemon() {
+        File[] list = gameDirectory.listFiles();
+        int length = list.length;
+        if(length == 0 || length < 0){
+            Game.getTextHelper().print("Your Pokemon directory is empty.");
+            return null;
         }else{
-            inMenu = true;
-            inBattleMenu = false;
+            Random r = new Random();
+            int file = r.nextInt(length - 1);
+            Game.getTextHelper().print("Found Pokemon #" + Integer.valueOf(file).toString());
+            return list[file];
         }
 
-        while(inMenu){
-            text.print("Write \"help\" for command info.");
-            String input = text.getStringInput("> ");
-            if(!Arrays.asList(validCommands).contains(input)){ // invalid command!
-                text.print("Invalid command!");
-            }
+    }
 
-            else if(input.equalsIgnoreCase("battle")){
-                text.print("Entering battle menu...");
-                inMenu = false;
-                inBattleMenu = true;
-            }
-
-            else if(input.equalsIgnoreCase("list")){
-                //prints all loaded pokemon
-                text.print("Loading Pokemon list...");
-                text.blank();
-                text.print("Name/Type/HP/Attack/Attack/Attack/Attack");
-                text.print("========================================");
-                File[] list = fileManager.gameDirectory.listFiles();
-                for(File file : list){
-                    String filename = file.getName();
-                    if(filename.endsWith(".poke")){
-                        fileManager.printInfo(file);
-                    }
+    public void getPokemonList() {
+        File[] list = gameDirectory.listFiles();
+        if (list != null) {
+            for (File file : list) {
+                String name = file.getName();
+                if (name.endsWith(".poke")) {
+                    Game.getTextHelper().print("");
                 }
-                if(list.length == 0){
-                    text.print("No Pokemon were found in your directory.");
-                }
-                text.blank();
-            }
-
-            else if(input.equalsIgnoreCase("credits")){
-                text.print("PokeSim v" + GAME_VERSION + " created by xxq.");
-                text.blank();
-            }
-
-            else if(input.equalsIgnoreCase("help")){
-                text.print("battle - Opens the battle menu. Used to battle certain pokemon.");
-                text.print("list - Prints all loaded Pokemon in memory.");
-                text.print("help - Display this menu.");
-                text.print("profile - Displays your profile info.");
-                text.blank();
-            }
-
-            else if(input.equalsIgnoreCase("profile")){
-                text.print("Your profile name is \"" + name + "\" ");
-                text.blank();
             }
         }
-        while(inBattleMenu) {
-            text.print("Write \"help\" for command info.");
-            String input = text.getStringInput("BATTLE> ");
+        int count = this.getPkmn();
+    }
 
-            if (input.equalsIgnoreCase("help")) {
-                text.print("- Type any Pokemon filename to battle it.");
-                text.print("- random to battle a random Pokemon.");
-                text.print("- back to return to the main menu.");
-                text.print("- list to list the available Pokemon to battle");
-                text.blank();
-
-            } else if (input.equalsIgnoreCase("back")) {
-                text.print("Returning to main menu...");
-                text.blank();
-                gameLoop(false);
-
-            } else if (input.equalsIgnoreCase("random")) {
-                battler.battle(fileManager.getRandomPokemon());
-
-            } else if (input.equalsIgnoreCase("list")) {
-                //prints all loaded pokemon
-                text.print("Loading Pokemon list...");
-                text.blank();
-                text.print("Name/Type/HP/Attack/Attack/Attack/Attack");
-                text.print("========================================");
-                File[] list = fileManager.gameDirectory.listFiles();
-                for (File file : list) {
-                    String filename = file.getName();
-                    if (filename.endsWith(".poke")) {
-                        fileManager.printInfo(file);
-                    }
+    /*
+    Goes through the game's directory and counts how many are
+    of file type .pkmn. Returns the resulting number.
+     */
+    public int getPkmn() {
+        int counter = 0;
+        File[] list = gameDirectory.listFiles();
+        if (list != null) {
+            for (File file : list) {
+                String name = file.getName();
+                if (name.endsWith(".poke")) {
+                    counter++;
                 }
-                if (list.length == 0) {
-                    text.print("No Pokemon were found in your directory.");
-                }
-                text.blank();
+            }
+        }
+        return counter;
+    }
 
-            } else if(input.equalsIgnoreCase("new")){
-                String in = text.getStringInput("Create new Pokemon? (y/n): ");
-                while(!in.equalsIgnoreCase("y") && !in.equalsIgnoreCase("n") && !in.equalsIgnoreCase("back")){
-                    in = text.getStringInput("Create new Pokemon? (y/n): ");
+    /*
+    Finds out if a file contains valid syntax.
+     */
+    public boolean isValidFile(File file) {
+        try{
+            boolean namecheck = false;
+            boolean hpcheck = false;
+            boolean typecheck = false;
+            boolean attackcheckone = false;
+            boolean attackchecktwo = false;
+            boolean attackcheckthree = false;
+            boolean attackcheckfour = false;
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null){
+                if(line.startsWith("name:")){
+                    namecheck = true;
                 }
-                if(in.equalsIgnoreCase("back")){
-                    gameLoop(true);
+                if(line.startsWith("basehp:")){
+                    hpcheck = true;
                 }
-                if(in.equalsIgnoreCase("y")){
-                    try{
-                        String name = text.getStringInput("Name?: ");
-                        String type = text.getStringInput("Type?: ");
-                        String hp = text.getStringInput("HP?: ");
-                        String attackone = text.getStringInput("Attack?: ");
-                        String attacktwo = text.getStringInput("Attack?: ");
-                        String attackthree = text.getStringInput("Attack?: ");
-                        String attackfour = text.getStringInput("Attack?: ");
-                        //TODO: Check if attackone is not valid aswell.
-                        while(name.length() > 16 || name.length() < 1 || !Arrays.asList(validTypes).contains(type) || Integer.parseInt(hp) < 1){
-                            if(name.length() > 16 || name.length() < 1){
-                                text.print("Name must have between 1 and 16 characters.");
-                                text.blank();
-                            }
-                            if(!Arrays.asList(validTypes).contains(type)){
-                                text.print("\"" + type + "\" is not a valid type.");
-                                text.blank();
-                            }
-                            if(Integer.parseInt(hp) < 1){
-                                text.print("HP must be between 1 and 2147483647.");
-                                text.blank();
-                            }
-                            name = text.getStringInput("Name?: ");
-                            type = text.getStringInput("Type?: ");
-                            hp = text.getStringInput("HP?: ");
-                            attackone = text.getStringInput("Attack?: ");
-                            attacktwo = text.getStringInput("Attack?: ");
-                            attackthree = text.getStringInput("Attack?: ");
-                            attackfour = text.getStringInput("Attack?: ");
-                        }
-                        //save file now, it is valid.
-                        text.print("saving file.");
-                    }catch(Exception e){
-                        text.print("HP must be a number between 1 and 2147483647.");
-                        gameLoop(true);
-                    }
+                if(line.startsWith("type:")){
+                    typecheck = true;
+                }
+                if(line.startsWith("attack1:")){
+                    attackcheckone = true;
+                }
+                if(line.startsWith("attack2:")){
+                    attackchecktwo = true;
+                }
+                if(line.startsWith("attack3:")){
+                    attackcheckthree = true;
+                }
+                if(line.startsWith("attack4:")){
+                    attackcheckfour = true;
+                }
+                if(namecheck && hpcheck && typecheck && attackcheckone && attackchecktwo && attackcheckthree && attackcheckfour){
+                    return true;
+                }else{
 
                 }
-                if(in.equalsIgnoreCase("n")){
-                    gameLoop(true);
-                }
-
-            } else if(input.equalsIgnoreCase("edit")){
-                text.print("");
             }
 
-            else if(!Arrays.asList(battleCommands).contains(input)){
-                text.print("Invalid command!");
-            }
+            }catch (Exception e){
+            return false;
+        }
+        return false;
+    }
 
+
+
+    public String getName(File file){
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("name:")) {
+                    String[] nameArray = line.split(":");
+                    String name = nameArray[1];
+                    return name;
+                }
+                reader.close();
+            }
+        } catch (Exception e) {
+            Game.getTextHelper().error("An error occurred while trying to read the name of a Pokemon.");
+        }
+        return null;
+    }
+
+    public String getType(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("type:")){
+                    String[] typeArray = line.split(":");
+                    String type = typeArray[1];
+                    return type;
+                }
+            }
+        }catch (Exception e){
+            Game.getTextHelper().error("An error occurred. 03");
+        }
+        return null;
+    }
+
+    public int getHP(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null){
+                if(line.startsWith("basehp:")){
+                    String[] hpArray = line.split(":");
+                    int hp = Integer.valueOf(hpArray[1]);
+                    return hp;
+                }
+            }
+        }catch (Exception e){
+            Game.getTextHelper().error("An error occurred. 02");
+        }
+        return -1;
+    }
+
+    public String getAttackSlotOne(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("attack1:")){
+                    String[] attackArray = line.split(":");
+                    String attack = attackArray[1];
+                    return attack;
+                }
+            }
+        }catch (Exception e){
+            return "none";
+        }
+        return "none";
+    }
+
+    public String getAttackSlotTwo(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("attack2:")){
+                    String[] attackArray = line.split(":");
+                    String attack = attackArray[1];
+                    return attack;
+                }
+            }
+        }catch (Exception e){
+            return "none";
+        }
+        return "none";
+    }
+
+    public String getAttackSlotThree(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("attack3:")){
+                    String[] attackArray = line.split(":");
+                    String attack = attackArray[1];
+                    return attack;
+                }
+            }
+        }catch (Exception e){
+            return "none";
+        }
+        return "none";
+    }
+
+    public String getAttackSlotFour(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("attack4:")){
+                    String[] attackArray = line.split(":");
+                    String attack = attackArray[1];
+                    return attack;
+                }
+            }
+        }catch (Exception e){
+            return "none";
+        }
+        return "none";
+    }
+
+    /*
+    Prints a Pokemon's info off of a file.
+     */
+    public void printInfo(File file) {
+        if(isValidFile(file)){
+            String name = this.getName(file);
+            String type = this.getType(file);
+            int hp = this.getHP(file);
+            String attackOne = this.getAttackSlotOne(file);
+            String attackTwo = this.getAttackSlotTwo(file);
+            String attackThree = this.getAttackSlotThree(file);
+            String attackFour = this.getAttackSlotFour(file);
+            Game.getTextHelper().print(name + "/" + type + "/" + hp + "/" + attackOne + "/" + attackTwo + "/" + attackThree + "/" + attackFour);
+        }else{
+            Game.getTextHelper().print("Found invalid file " + file.getName() + ", ignoring!");
         }
     }
-
-    public static FileManager getFileManager(){
-        return fileManager;
-    }
-
-    public static Text getTextHelper(){
-        return text;
-    }
-
-    public static boolean getMenuState(){
-        return inMenu;
-    }
-
 }
+
