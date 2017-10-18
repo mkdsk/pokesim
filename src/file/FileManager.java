@@ -1,9 +1,8 @@
 package file;
 
 import game.Game;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+
+import java.io.*;
 import java.util.Random;
 
 public class FileManager {
@@ -20,7 +19,6 @@ public class FileManager {
     /*
     Returns a random .poke file from the directory.
      */
-    //TODO: Add isValid() before returning file
     public File getRandomPokemon() {
         File[] list = gameDirectory.listFiles();
         int length = list.length;
@@ -29,9 +27,11 @@ public class FileManager {
             return null;
         }else{
             Random r = new Random();
-            int file = r.nextInt(length - 1 + 1) + 1;
+            int file = r.nextInt(length - 1);
+            Game.getTextHelper().print("Found Pokemon #" + Integer.valueOf(file).toString());
             return list[file];
         }
+
     }
 
     public void getPokemonList() {
@@ -129,7 +129,7 @@ public class FileManager {
                 reader.close();
             }
         } catch (Exception e) {
-            Game.getTextHelper().error("An error occurred. 04");
+            Game.getTextHelper().error("An error occurred while trying to read the name of a Pokemon.");
         }
         return null;
     }
@@ -252,6 +252,33 @@ public class FileManager {
         }else{
             Game.getTextHelper().print("Found invalid file " + file.getName() + ", ignoring!");
         }
+    }
+
+    public void deleteFile(String filename){
+
+    }
+
+    public void writeAttackFile(){
+
+    }
+
+    public void writePokemonFile(String filename, String name, String type, String hp, String attack_one, String attack_two, String attack_three, String attack_four){
+        try{
+            File f = new File("C:" + File.separator + "PokeSim" + File.separator + filename);
+            FileWriter fWriter = new FileWriter(f);
+            PrintWriter w = new PrintWriter(fWriter);
+            w.print("name:" + name);
+            w.print("\ntype:" + type);
+            w.print("\nbasehp:" + hp);
+            w.print("\nattack1:" + attack_one);
+            w.print("\nattack2:" + attack_two);
+            w.print("\nattack3:" + attack_three);
+            w.print("\nattack4:" + attack_four);
+            w.close();
+        }catch(IOException e){
+            Game.getTextHelper().print("Error: " + e.getMessage());
+        }
+
     }
 }
 
