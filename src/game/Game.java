@@ -202,9 +202,9 @@ public class Game {
                             attackfour = text.getStringInput("Attack?: ");
                         }
                         //save file now, it is valid.
-                        text.print("good!");
+                        text.print("Creating Pokemon: " + name + "/" + type + "/" + hp "/" + attackone + "/" + attacktwo + "/" + attackthree + "/" + attackfour);
                         //TODO: add input and checks for filename.
-                        fileManager.writePokemonFile("kyle.poke", name, type, hp, attackone, attacktwo, attackthree, attackfour);
+                        fileManager.writePokemonFile("file.poke", name, type, hp, attackone, attacktwo, attackthree, attackfour);
                         text.print(fileManager.getPkmn() + " Pokemon initialized.");
 
                     }catch(Exception e){
