@@ -237,7 +237,7 @@ public class Game {
     }
 
     public static boolean getMenuState(){
-        return inMenu;
+        return inMenu ? inMenu : inBattleMenu;
     }
 
 }
