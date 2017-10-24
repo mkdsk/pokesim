@@ -18,10 +18,11 @@ import java.util.Arrays;
 
 public class Game {
 
-    private static FileManager fileManager; 
+    private static FileManager fileManager; // Useful file manager.
     private static Text text = new Text();
     private static Battler battler = new Battler();
 
+    private static String[] valid_Attr = {"name", "atk", "def", "type", "hp", "atk1", "atk2", "atk3", "atk4"};
     private static String[] validTypes = {"bug", "dragon", "ice", "fighting", "fire", "flying", "grass", "ghost", "ground", "electric", "normal", "poison", "psychic", "rock", "water", "Bug", "Dragon", "Ice", "Fighting", "Fire", "Flying", "Grass", "Ghost", "Ground", "Electric", "Normal", "Poison", "Psychic", "Rock", "Water"};
     private static String[] validCommands = {"", "help", "battle", "list", "credits", "profile"};
     private static String[] battleCommands = {"random", "list", "back", "new", "edit", "start", "del"};
@@ -54,6 +55,12 @@ public class Game {
             }else {
                 text.print(fileManager.getPkmn() + " Pokemon initialized.");
             }
+            text.print("Loading attacks...");
+            if(fileManager.getAttackCount() == 0){
+                text.print("Zero attacks were found in your PokeSim directory.");
+            }else{
+                text.print(fileManager.getAttackCount() + " attack(s) initialized.");
+            }
             text.seperator();
             text.print("Please enter a name for your profile: ");
             String inp = text.getStringInput("> ");
@@ -72,7 +79,7 @@ public class Game {
             e.printStackTrace();
             text.seperator();
             text.error("\nAn unknown error has occurred while running the game.");
-            text.error("Error message: ");
+            text.error("Error:");
             text.error(e.getMessage());
         }
     }
@@ -174,6 +181,8 @@ public class Game {
                     try{
                         String filename = text.getStringInput("Filename?: ");
                         String name = text.getStringInput("Name?: ");
+                        String atk = text.getStringInput("Atk Stat?: ");
+                        String def = text.getStringInput("Def Stat?: ");
                         String type = text.getStringInput("Type?: ");
                         String hp = text.getStringInput("HP?: ");
                         String attackone = text.getStringInput("Attack?: ");
@@ -199,6 +208,8 @@ public class Game {
                             }
                             filename = text.getStringInput("Filename?: ");
                             name = text.getStringInput("Name?: ");
+                            atk = text.getStringInput("Atk Stat?: ");
+                            def = text.getStringInput("Def Stat?: ");
                             type = text.getStringInput("Type?: ");
                             hp = text.getStringInput("HP?: ");
                             attackone = text.getStringInput("Attack?: ");
@@ -209,11 +220,11 @@ public class Game {
                         //save file now, it is valid.
                         text.print("Validating file...");
                         String newType = type.replace(type.charAt(0), Character.toUpperCase(type.charAt(0)));
-                        fileManager.writePokemonFile(filename + ".poke", name, newType, hp, attackone, attacktwo, attackthree, attackfour);
+                        fileManager.writePokemonFile(filename + ".poke", name, Integer.valueOf(atk), Integer.valueOf(def), newType, hp, attackone, attacktwo, attackthree, attackfour);
                         text.print(fileManager.getPkmn() + " Pokemon initialized.");
 
                     }catch(Exception e){
-                        text.print("HP must be a number between 1 and 2147483647.");
+                        text.print("Enter a number between 1 and 2147483647.");
                         gameLoop(true);
                     }
 
@@ -231,8 +242,7 @@ public class Game {
                 for(File file : fileManager.gameDirectory.listFiles()){
                     if(file.getName().equalsIgnoreCase(edit)){
                         found = true;
-                        String[] valid_Attr = {"name", "type", "hp", "atk1", "atk2", "atk3", "atk4"};
-                        text.print("name type hp atk1 atk2 atk3 atk4");
+                        text.print("name atk def type hp atk1 atk2 atk3 atk4");
                         String attr = text.getStringInput("Which attribute to edit?");
                         if(!Arrays.asList(valid_Attr).contains(attr)){
                             text.print("Invalid attribute.");
@@ -291,7 +301,7 @@ public class Game {
     }
 
     public static void listPokemon(){
-        text.print("File/Name/Type/HP/Attack/Attack/Attack/Attack");
+        text.print("File/Name/Atk/Def/Type/HP/Attack/Attack/Attack/Attack");
         text.print("=============================================");
         File[] list = fileManager.gameDirectory.listFiles();
         for (File file : list) {
