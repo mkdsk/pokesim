@@ -248,7 +248,7 @@ public class FileManager {
             String attackTwo = this.getAttackSlotTwo(file);
             String attackThree = this.getAttackSlotThree(file);
             String attackFour = this.getAttackSlotFour(file);
-            Game.getTextHelper().print(name + "/" + type + "/" + hp + "/" + attackOne + "/" + attackTwo + "/" + attackThree + "/" + attackFour);
+            Game.getTextHelper().print(file.getName() + "/" + name + "/" + type + "/" + hp + "/" + attackOne + "/" + attackTwo + "/" + attackThree + "/" + attackFour);
         }else{
             Game.getTextHelper().print("Found invalid file " + file.getName() + ", ignoring!");
         }
