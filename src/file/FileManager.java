@@ -34,17 +34,14 @@ public class FileManager {
 
     }
 
-    public void getPokemonList() {
-        File[] list = gameDirectory.listFiles();
-        if (list != null) {
-            for (File file : list) {
-                String name = file.getName();
-                if (name.endsWith(".poke")) {
-                    Game.getTextHelper().print("");
-                }
+    public int getAttackCount(){
+        int counter = 0;
+        for(File file : gameDirectory.listFiles()){
+            if(file.getName().endsWith(".atk")){
+                counter++;
             }
         }
-        int count = this.getPkmn();
+        return counter;
     }
 
     /*
@@ -70,6 +67,8 @@ public class FileManager {
      */
     public boolean isValidFile(File file) {
         try{
+            boolean atkcheck = false;
+            boolean defcheck = false;
             boolean namecheck = false;
             boolean hpcheck = false;
             boolean typecheck = false;
@@ -82,6 +81,12 @@ public class FileManager {
             while ((line = reader.readLine()) != null){
                 if(line.startsWith("name:")){
                     namecheck = true;
+                }
+                if(line.startsWith("atk")){
+                    atkcheck = true;
+                }
+                if(line.startsWith("def")){
+                    defcheck = true;
                 }
                 if(line.startsWith("basehp:")){
                     hpcheck = true;
@@ -101,7 +106,7 @@ public class FileManager {
                 if(line.startsWith("attack4:")){
                     attackcheckfour = true;
                 }
-                if(namecheck && hpcheck && typecheck && attackcheckone && attackchecktwo && attackcheckthree && attackcheckfour){
+                if(defcheck && atkcheck && namecheck && hpcheck && typecheck && attackcheckone && attackchecktwo && attackcheckthree && attackcheckfour){
                     return true;
                 }else{
 
@@ -114,7 +119,41 @@ public class FileManager {
         return false;
     }
 
+    public int getAtk(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null){
+                if(line.startsWith("atk")){
+                    String[] atkArray = line.split(":");
+                    int atk = Integer.valueOf(atkArray[1]);
+                    return atk;
+                }
+            }
 
+        }catch(Exception e){
+            Game.getTextHelper().print("An error occurred while trying to read " + file.getName() + "'s attack.");
+        }
+        return 1;
+    }
+
+    public int getDef(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null){
+                if(line.startsWith("def")){
+                    String[] defArray = line.split(":");
+                    int atk = Integer.valueOf(defArray[1]);
+                    return atk;
+                }
+            }
+
+        }catch(Exception e){
+            Game.getTextHelper().print("An error occurred while trying to read " + file.getName() + "'s defense.");
+        }
+        return 1;
+    }
 
     public String getName(File file){
         try {
@@ -243,12 +282,14 @@ public class FileManager {
         if(isValidFile(file)){
             String name = this.getName(file);
             String type = this.getType(file);
+            int atk = this.getAtk(file);
+            int def = this.getDef(file);
             int hp = this.getHP(file);
             String attackOne = this.getAttackSlotOne(file);
             String attackTwo = this.getAttackSlotTwo(file);
             String attackThree = this.getAttackSlotThree(file);
             String attackFour = this.getAttackSlotFour(file);
-            Game.getTextHelper().print(file.getName() + "/" + name + "/" + type + "/" + hp + "/" + attackOne + "/" + attackTwo + "/" + attackThree + "/" + attackFour);
+            Game.getTextHelper().print(file.getName() + "/" + name + "/" + atk + "/" + def + "/" + type + "/" + hp + "/" + attackOne + "/" + attackTwo + "/" + attackThree + "/" + attackFour);
         }else{
             Game.getTextHelper().print("Found invalid file " + file.getName() + ", ignoring!");
         }
@@ -262,12 +303,14 @@ public class FileManager {
 
     }
 
-    public void writePokemonFile(String filename, String name, String type, String hp, String attack_one, String attack_two, String attack_three, String attack_four){
+    public void writePokemonFile(String filename, String name, int atk, int def, String type, String hp, String attack_one, String attack_two, String attack_three, String attack_four){
         try{
             File f = new File("C:" + File.separator + "PokeSim" + File.separator + filename);
             FileWriter fWriter = new FileWriter(f);
             PrintWriter w = new PrintWriter(fWriter);
             w.print("name:" + name);
+            w.print("\natk:" + atk);
+            w.print("\ndef:" + def);
             w.print("\ntype:" + type);
             w.print("\nbasehp:" + hp);
             w.print("\nattack1:" + attack_one);
