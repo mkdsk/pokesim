@@ -18,7 +18,7 @@ import java.util.Arrays;
 
 public class Game {
 
-    private static FileManager fileManager; // Useful file manager.
+    private static FileManager fileManager; 
     private static Text text = new Text();
     private static Battler battler = new Battler();
 
@@ -72,7 +72,7 @@ public class Game {
             e.printStackTrace();
             text.seperator();
             text.error("\nAn unknown error has occurred while running the game.");
-            text.error("Tell xxq#4507 this message:");
+            text.error("Error message: ");
             text.error(e.getMessage());
         }
     }
