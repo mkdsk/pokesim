@@ -18,7 +18,7 @@ import java.util.Arrays;
 
 public class Game {
 
-    private static FileManager fileManager; // Useful file manager.
+    private static FileManager fileManager; 
     private static Text text = new Text();
     private static Battler battler = new Battler();
 
