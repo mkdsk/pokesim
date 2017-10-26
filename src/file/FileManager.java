@@ -11,6 +11,7 @@ public class FileManager {
     public File gameDirectory;
 
     public FileManager() {
+        //Make gamedir on startup if it does not exist
         gameDirectory = new File("C:" + File.separator + "PokeSim");
         if (!gameDirectory.exists()) {
             gameDirectory.mkdirs();
@@ -64,7 +65,7 @@ public class FileManager {
     }
 
     /*
-    Finds out if a file contains valid syntax.
+    Finds out if a .poke contains valid syntax.
      */
     public boolean isValidFile(File file) {
         try{
