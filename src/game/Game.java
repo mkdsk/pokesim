@@ -98,6 +98,9 @@ public class Game {
         }
         while(inMenu){
             String input = text.getStringInput("MENU> ");
+            //---------------------------------
+            //String[] arg = input.split(" "); Make new, edit, start, del commands more efficient!;
+            //---------------------------------
             if(!Arrays.asList(validCommands).contains(input)){ // invalid command!
             }
 
