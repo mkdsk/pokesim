@@ -18,12 +18,12 @@ import java.util.Arrays;
 
 public class Game {
 
-    private static FileManager fileManager; 
+    private static FileManager fileManager;
     private static Text text = new Text();
     private static Battler battler = new Battler();
 
-    private static String[] valid_Attr = {"name", "atk", "def", "type", "hp", "atk1", "atk2", "atk3", "atk4"};
-    private static String[] validTypes = {"bug", "dragon", "ice", "fighting", "fire", "flying", "grass", "ghost", "ground", "electric", "normal", "poison", "psychic", "rock", "water", "Bug", "Dragon", "Ice", "Fighting", "Fire", "Flying", "Grass", "Ghost", "Ground", "Electric", "Normal", "Poison", "Psychic", "Rock", "Water"};
+    private static String[] valid_Attr = {"name", "atk", "def", "speed", "type", "hp", "atk1", "atk2", "atk3", "atk4"};
+    public static String[] validTypes = {"bug", "dragon", "ice", "fighting", "fire", "flying", "grass", "ghost", "ground", "electric", "normal", "poison", "psychic", "rock", "water", "Bug", "Dragon", "Ice", "Fighting", "Fire", "Flying", "Grass", "Ghost", "Ground", "Electric", "Normal", "Poison", "Psychic", "Rock", "Water"};
     private static String[] validCommands = {"", "help", "battle", "list", "credits", "profile"};
     private static String[] battleCommands = {"random", "list", "back", "new", "edit", "start", "del"};
     private static String name = "default";
@@ -47,7 +47,7 @@ public class Game {
             text.seperator();
             text.print("Initalized File Manager...");
             text.print("Initalized Text functions...");
-            text.print("Loading Pokemon...");
+            text.print("Loading files...");
             if(fileManager.getPkmn() == 0){
                 text.error("Zero Pokemon were found in your PokeSim directory. Make sure");
                 text.error("You have downloaded the first gen pack and installed it in the");
@@ -55,7 +55,6 @@ public class Game {
             }else {
                 text.print(fileManager.getPkmn() + " Pokemon initialized.");
             }
-            text.print("Loading attacks...");
             if(fileManager.getAttackCount() == 0){
                 text.print("Zero attacks were found in your PokeSim directory.");
             }else{
@@ -150,6 +149,7 @@ public class Game {
                 text.print("- del to delete a Pokemon or attack.");
                 text.print("- edit to edit a Pokemon.");
                 text.print("- new to create a new Pokemon.");
+                text.print("- attacks to list your loaded attacks.");
                 text.blank();
 
             } else if (input.equalsIgnoreCase("back")) {
@@ -161,9 +161,10 @@ public class Game {
                 battler.battle(fileManager.getRandomPokemon());
 
             } else if (input.equalsIgnoreCase("list")) {
-                listPokemon();
                 if (fileManager.getPkmn() == 0) {
                     text.print("No Pokemon were found in your directory.");
+                }else{
+                    listPokemon();
                 }
                 text.blank();
 
@@ -183,6 +184,7 @@ public class Game {
                         String name = text.getStringInput("Name?: ");
                         String atk = text.getStringInput("Atk Stat?: ");
                         String def = text.getStringInput("Def Stat?: ");
+                        String spd = text.getStringInput("Speed?: ");
                         String type = text.getStringInput("Type?: ");
                         String hp = text.getStringInput("HP?: ");
                         String attackone = text.getStringInput("Attack?: ");
@@ -190,37 +192,25 @@ public class Game {
                         String attackthree = text.getStringInput("Attack?: ");
                         String attackfour = text.getStringInput("Attack?: ");
                         //TODO: Check if all attacks are valid except if they are empty ("")
-                        while(filename.length() > 16 || filename.length() < 1 || name.length() > 16 || name.length() < 1 || !Arrays.asList(validTypes).contains(type) || Integer.parseInt(hp) < 1){
+                        if(filename.length() > 16 || filename.length() < 1 || name.length() > 16 || name.length() < 1 || !Arrays.asList(validTypes).contains(type) || Integer.parseInt(hp) < 1){
                             if(filename.length() > 16 || filename.length() < 1){
                                 text.print("Filename must be between 1 and 16 characters long.");
                             }
                             if(name.length() > 16 || name.length() < 1){
                                 text.print("Name must have between 1 and 16 characters.");
-                                text.blank();
                             }
                             if(!Arrays.asList(validTypes).contains(type)){
                                 text.print("\"" + type + "\" is not a valid type.");
-                                text.blank();
                             }
                             if(Integer.parseInt(hp) < 1){
                                 text.print("HP must be between 1 and 2147483647.");
-                                text.blank();
                             }
-                            filename = text.getStringInput("Filename?: ");
-                            name = text.getStringInput("Name?: ");
-                            atk = text.getStringInput("Atk Stat?: ");
-                            def = text.getStringInput("Def Stat?: ");
-                            type = text.getStringInput("Type?: ");
-                            hp = text.getStringInput("HP?: ");
-                            attackone = text.getStringInput("Attack?: ");
-                            attacktwo = text.getStringInput("Attack?: ");
-                            attackthree = text.getStringInput("Attack?: ");
-                            attackfour = text.getStringInput("Attack?: ");
+                            gameLoop(true);
                         }
                         //save file now, it is valid.
                         text.print("Validating file...");
                         String newType = type.replace(type.charAt(0), Character.toUpperCase(type.charAt(0)));
-                        fileManager.writePokemonFile(filename + ".poke", name, Integer.valueOf(atk), Integer.valueOf(def), newType, hp, attackone, attacktwo, attackthree, attackfour);
+                        fileManager.writePokemonFile(filename + ".poke", name, Integer.valueOf(atk), Integer.valueOf(def), Integer.valueOf(spd), newType, hp, attackone, attacktwo, attackthree, attackfour);
                         text.print(fileManager.getPkmn() + " Pokemon initialized.");
 
                     }catch(Exception e){
@@ -233,8 +223,6 @@ public class Game {
                     gameLoop(true);
                 }
 
-
-
             } else if(input.equalsIgnoreCase("edit")){
                 listPokemon();
                 String edit = text.getStringInput("Pokemon to edit?");
@@ -242,7 +230,7 @@ public class Game {
                 for(File file : fileManager.gameDirectory.listFiles()){
                     if(file.getName().equalsIgnoreCase(edit)){
                         found = true;
-                        text.print("name atk def type hp atk1 atk2 atk3 atk4");
+                        text.print("name atk def speed type hp atk1 atk2 atk3 atk4");
                         String attr = text.getStringInput("Which attribute to edit?");
                         if(!Arrays.asList(valid_Attr).contains(attr)){
                             text.print("Invalid attribute.");
@@ -293,6 +281,14 @@ public class Game {
                     text.print("File " + delete + " not found!");
                 }
 
+            } else if(input.equalsIgnoreCase("attacks")){
+                if(fileManager.getAttackCount() == 0){
+                    text.print("You currently have 0 loaded attacks.");
+                }else{
+                    listAttacks();
+                }
+                text.blank();
+
             } else if(!Arrays.asList(battleCommands).contains(input)){
 
             }
@@ -301,13 +297,24 @@ public class Game {
     }
 
     public static void listPokemon(){
-        text.print("File/Name/Atk/Def/Type/HP/Attack/Attack/Attack/Attack");
-        text.print("=============================================");
+        text.print("File/Name/Atk/Def/Speed/Type/HP/Attack/Attack/Attack/Attack");
+        text.print("===========================================================");
         File[] list = fileManager.gameDirectory.listFiles();
         for (File file : list) {
             String filename = file.getName();
             if (filename.endsWith(".poke")) {
                 fileManager.printInfo(file);
+            }
+        }
+    }
+
+    public static void listAttacks(){
+        text.print("File/Name/Type/Power/Accuracy");
+        text.print("=============================");
+        File[] list = fileManager.gameDirectory.listFiles();
+        for (File file : list){
+            if(file.getName().endsWith(".atk")){
+                fileManager.printAttack(file);
             }
         }
     }
