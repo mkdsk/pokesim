@@ -6,13 +6,10 @@ import text.Text;
 import java.io.File;
 import java.util.Arrays;
 
-/* TODO:
-    Start command (for battling a Pokemon)
-    Profile saving
+/* TODO
     Edit command
     Fix del command
 
-    Add attack loading
     Implement battles and attack commands. damage calculation
  */
 
@@ -22,20 +19,24 @@ public class Game {
     private static Text text = new Text();
     private static Battler battler = new Battler();
 
-    private static String[] valid_Attr = {"name", "atk", "def", "speed", "type", "hp", "atk1", "atk2", "atk3", "atk4"};
     public static String[] validTypes = {"bug", "dragon", "ice", "fighting", "fire", "flying", "grass", "ghost", "ground", "electric", "normal", "poison", "psychic", "rock", "water", "Bug", "Dragon", "Ice", "Fighting", "Fire", "Flying", "Grass", "Ghost", "Ground", "Electric", "Normal", "Poison", "Psychic", "Rock", "Water"};
+    // Valid attributes used in .poke files
+    private static String[] valid_Attr = {"name", "atk", "def", "speed", "type", "hp", "atk1", "atk2", "atk3", "atk4"};
+    // Valid commands for the battle and regular menu
     private static String[] validCommands = {"", "help", "battle", "list", "credits", "profile"};
     private static String[] battleCommands = {"random", "list", "back", "new", "edit", "start", "del"};
-    private static String name = "default";
+    private static String name = "Player";
 
+    // Determine the course of the program
     private static boolean inBattleMenu = false;
-    private static boolean inMenu = false; // Determines whether we should run the menu loop
+    private static boolean inMenu = false;
 
     public static final String GAME_NAME = "PokeSim";
     public static final String GAME_REL_VER = "Pre-Alpha";
-    public static final String GAME_VERSION = "0.2";
+    public static final String GAME_VERSION = "0.3";
 
     public static void main(String[] args){
+        //TODO: get args and use them
         init();
     }
 
@@ -50,9 +51,9 @@ public class Game {
             text.print("Loading files...");
             if(fileManager.getPkmn() == 0){
                 text.error("Zero Pokemon were found in your PokeSim directory. Make sure");
-                text.error("You have downloaded the first gen pack and installed it in the");
-                text.error("Proper directory. If the error persists, contact xxq on Discord.");
-            }else {
+                text.error("you have downloaded the first gen pack and installed it in the");
+                text.error("proper directory (C:\PokeSim\)");
+            }else{
                 text.print(fileManager.getPkmn() + " Pokemon initialized.");
             }
             if(fileManager.getAttackCount() == 0){
@@ -83,6 +84,10 @@ public class Game {
         }
     }
 
+    /* All commands are dealt with within this function.
+       Parameters: battle (Determines whether to restart the 
+       loop in the battle menu or the regular menu. 
+    */
     public static void gameLoop(boolean battle){
         if(battle){
             inBattleMenu = true;
@@ -91,11 +96,9 @@ public class Game {
             inMenu = true;
             inBattleMenu = false;
         }
-
         while(inMenu){
             String input = text.getStringInput("MENU> ");
             if(!Arrays.asList(validCommands).contains(input)){ // invalid command!
-
             }
 
             //Description: Enters the battle menu.
@@ -116,7 +119,7 @@ public class Game {
 
             //Description: Displays game credits.
             else if(input.equalsIgnoreCase("credits")){
-                text.print("PokeSim v" + GAME_VERSION + " created by xxq.");
+                text.print("PokeSim v" + GAME_VERSION + " created by [][].");
                 text.blank();
             }
 
@@ -236,7 +239,7 @@ public class Game {
                             text.print("Invalid attribute.");
                         }else{
                             String in = text.getStringInput("Modify " + attr + ":");
-                            //todo: make functions in filemanager to replace attribute values in files
+                            
                         }
                     }
                 }
