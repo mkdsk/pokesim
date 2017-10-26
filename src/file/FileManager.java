@@ -3,6 +3,7 @@ package file;
 import game.Game;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Random;
 
 public class FileManager {
@@ -69,6 +70,7 @@ public class FileManager {
         try{
             boolean atkcheck = false;
             boolean defcheck = false;
+            boolean spdcheck = false;
             boolean namecheck = false;
             boolean hpcheck = false;
             boolean typecheck = false;
@@ -88,11 +90,19 @@ public class FileManager {
                 if(line.startsWith("def")){
                     defcheck = true;
                 }
+                if(line.startsWith("speed:")){
+                    spdcheck = true;
+                }
                 if(line.startsWith("basehp:")){
                     hpcheck = true;
                 }
                 if(line.startsWith("type:")){
-                    typecheck = true;
+                    String[] type = line.split(":");
+                    if(Arrays.asList(Game.validTypes).contains(type[1])){
+                        typecheck = true;
+                    }else{
+                        typecheck = false;
+                    }
                 }
                 if(line.startsWith("attack1:")){
                     attackcheckone = true;
@@ -106,7 +116,7 @@ public class FileManager {
                 if(line.startsWith("attack4:")){
                     attackcheckfour = true;
                 }
-                if(defcheck && atkcheck && namecheck && hpcheck && typecheck && attackcheckone && attackchecktwo && attackcheckthree && attackcheckfour){
+                if(spdcheck && defcheck && atkcheck && namecheck && hpcheck && typecheck && attackcheckone && attackchecktwo && attackcheckthree && attackcheckfour){
                     return true;
                 }else{
 
@@ -132,7 +142,7 @@ public class FileManager {
             }
 
         }catch(Exception e){
-            Game.getTextHelper().print("An error occurred while trying to read " + file.getName() + "'s attack.");
+            Game.getTextHelper().error("An error occurred while trying to read " + file.getName() + "'s attack.");
         }
         return 1;
     }
@@ -150,7 +160,7 @@ public class FileManager {
             }
 
         }catch(Exception e){
-            Game.getTextHelper().print("An error occurred while trying to read " + file.getName() + "'s defense.");
+            Game.getTextHelper().error("An error occurred while trying to read " + file.getName() + "'s defense.");
         }
         return 1;
     }
@@ -173,6 +183,22 @@ public class FileManager {
         return null;
     }
 
+    public int getSpd(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("speed:")){
+                    String[] speedArr = line.split(":");
+                    return Integer.valueOf(speedArr[1]);
+                }
+            }
+        }catch(Exception e){
+            Game.getTextHelper().error("An error occurred while trying to read the speed of a Pokemon.");
+        }
+        return 1;
+    }
+
     public String getType(File file){
         try{
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -185,7 +211,7 @@ public class FileManager {
                 }
             }
         }catch (Exception e){
-            Game.getTextHelper().error("An error occurred. 03");
+            Game.getTextHelper().error("An error occurred while trying to read the type of a Pokemon.");
         }
         return null;
     }
@@ -275,6 +301,123 @@ public class FileManager {
         return "none";
     }
 
+    public boolean isValidAttack(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            boolean name = false;
+            boolean type = false;
+            boolean power = false;
+            boolean accuracy = false;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("name:")){
+                    name = true;
+                }
+                if(line.startsWith("type:")){
+                    String[] typeArr = line.split(":");
+                    if(Arrays.asList(Game.validTypes).contains(typeArr[1])){
+                        type = true;
+                    }else{
+                        type = false;
+                    }
+                }
+                if(line.startsWith("power:")){
+                    power = true;
+                }
+                if(line.startsWith("accuracy:")){
+                    String[] accArr = line.split(":");
+                    if(Integer.valueOf(accArr[1]) > 100 || Integer.valueOf(accArr[1]) < 1){
+                        accuracy = false;
+                    }else{
+                        accuracy = true;
+                    }
+                }
+                if(accuracy && power && type && name){
+                    return true;
+                }
+            }
+        }catch(Exception e){
+            return false;
+        }
+        return false;
+    }
+
+    public String getAtkName(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null){
+                if(line.startsWith("name:")){
+                    String[] atkArr = line.split(":");
+                    return atkArr[1];
+                }
+            }
+        }catch(Exception e){
+            Game.getTextHelper().error("An error occurred while trying to read " + file.getName() + "'s name.");
+        }
+        return null;
+    }
+
+    public int getPower(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null){
+                if(line.startsWith("power:")){
+                    String[] pwrArr = line.split(":");
+                    return Integer.valueOf(pwrArr[1]);
+                }
+            }
+        }catch(Exception e){
+            Game.getTextHelper().error("An error occurred while trying to read " + file.getName() + "'s power.");
+        }
+        return 1;
+    }
+
+    public String getAtkType(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null){
+                if(line.startsWith("type:")){
+                    String[] typeArr = line.split(":");
+                    return typeArr[1];
+                }
+            }
+        }catch(Exception e){
+            Game.getTextHelper().error("An error occurred while trying to read " + file.getName() + "'s type.");
+        }
+        return null;
+    }
+
+    public int getAccuracy(File file){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null){
+                if(line.startsWith("accuracy:")){
+                    String[] accArr = line.split(":");
+                    return Integer.valueOf(accArr[1]);
+                }
+            }
+        }catch(Exception e){
+            Game.getTextHelper().error("An error occurred while trying to read " + file.getName() + "'s accuracy.");
+        }
+        return 100;
+    }
+
+    public void printAttack(File file){
+        if(isValidAttack(file)){
+            String name = this.getAtkName(file);
+            String type = this.getAtkType(file);
+            int power = this.getPower(file);
+            int accuracy = this.getAccuracy(file);
+            Game.getTextHelper().print(file.getName() + "/" + name + "/" + type + "/" + power + "/" + accuracy);
+        }else{
+            Game.getTextHelper().print("Found invalid attack file " + file.getName() + ", ignoring!");
+        }
+    }
+
     /*
     Prints a Pokemon's info off of a file.
      */
@@ -285,17 +428,18 @@ public class FileManager {
             int atk = this.getAtk(file);
             int def = this.getDef(file);
             int hp = this.getHP(file);
+            int spd = this.getSpd(file);
             String attackOne = this.getAttackSlotOne(file);
             String attackTwo = this.getAttackSlotTwo(file);
             String attackThree = this.getAttackSlotThree(file);
             String attackFour = this.getAttackSlotFour(file);
-            Game.getTextHelper().print(file.getName() + "/" + name + "/" + atk + "/" + def + "/" + type + "/" + hp + "/" + attackOne + "/" + attackTwo + "/" + attackThree + "/" + attackFour);
+            Game.getTextHelper().print(file.getName() + "/" + name + "/" + atk + "/" + def + "/" + spd + "/" + type + "/" + hp + "/" + attackOne + "/" + attackTwo + "/" + attackThree + "/" + attackFour);
         }else{
             Game.getTextHelper().print("Found invalid file " + file.getName() + ", ignoring!");
         }
     }
 
-    public void deleteFile(String filename){
+    public void deleteFile(File file){
 
     }
 
@@ -303,7 +447,7 @@ public class FileManager {
 
     }
 
-    public void writePokemonFile(String filename, String name, int atk, int def, String type, String hp, String attack_one, String attack_two, String attack_three, String attack_four){
+    public void writePokemonFile(String filename, String name, int atk, int def, int spd, String type, String hp, String attack_one, String attack_two, String attack_three, String attack_four){
         try{
             File f = new File("C:" + File.separator + "PokeSim" + File.separator + filename);
             FileWriter fWriter = new FileWriter(f);
@@ -311,6 +455,7 @@ public class FileManager {
             w.print("name:" + name);
             w.print("\natk:" + atk);
             w.print("\ndef:" + def);
+            w.print("\nspeed:" + spd);
             w.print("\ntype:" + type);
             w.print("\nbasehp:" + hp);
             w.print("\nattack1:" + attack_one);
