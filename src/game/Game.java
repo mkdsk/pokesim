@@ -52,7 +52,7 @@ public class Game {
             if(fileManager.getPkmn() == 0){
                 text.error("Zero Pokemon were found in your PokeSim directory. Make sure");
                 text.error("you have downloaded the first gen pack and installed it in the");
-                text.error("proper directory (C:\PokeSim\)");
+                text.error("proper directory (C:/PokeSim)");
             }else{
                 text.print(fileManager.getPkmn() + " Pokemon initialized.");
             }
