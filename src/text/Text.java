@@ -4,8 +4,10 @@ import java.util.Scanner;
 
 public class Text {
 
+    public Scanner sc;
+	
     public Text(){
-
+    	sc = new Scanner(System.in);
     }
 
     /*
@@ -44,7 +46,6 @@ public class Text {
 
     public String getStringInput(String s){
         this.print(s);
-        Scanner sc = new Scanner(System.in);
         String n = sc.nextLine();
         return n;
     }
