@@ -1,9 +1,10 @@
 name:Charizard
 atk:84
 def:78
-type:FlyingFire //Two types is currently not acceptable by the pokemon parser.
+speed:120
+type:Fire
 basehp:78
 attack1:Fire Blast
-attack2:
-attack3:
-attack4:
+attack2:Placeholder
+attack3:Placeholder
+attack4:Placeholder
