@@ -1,6 +1,6 @@
-package klowa.file;
+package file;
 
-import klowa.game.Game;
+import game.Game;
 
 import java.io.*;
 import java.util.Arrays;
