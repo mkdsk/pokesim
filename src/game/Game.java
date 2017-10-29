@@ -11,7 +11,7 @@ import java.util.Arrays;
     Add setpoke <pkmn file> command.
     Add arguments for start command.
     
-    Fix FATAL: Fix resource leaks.
+    Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them?)
     Fix del command and add arguments for it.
     
     Make sure types of Pokemon are valid before entering battle.
