@@ -1,6 +1,6 @@
-package file;
+package klowa.file;
 
-import game.Game;
+import klowa.game.Game;
 
 import java.io.*;
 import java.util.Arrays;
@@ -118,9 +118,10 @@ public class FileManager {
                     attackcheckfour = true;
                 }
                 if(spdcheck && defcheck && atkcheck && namecheck && hpcheck && typecheck && attackcheckone && attackchecktwo && attackcheckthree && attackcheckfour){
-                    return true;
+                    reader.close();
+                	return true;
                 }else{
-
+                	reader.close();
                 }
             }
 
@@ -130,7 +131,8 @@ public class FileManager {
         return false;
     }
 
-    public int getAtk(File file){
+    @SuppressWarnings("resource")
+	public int getAtk(File file){
         try{
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
@@ -138,8 +140,10 @@ public class FileManager {
                 if(line.startsWith("atk")){
                     String[] atkArray = line.split(":");
                     int atk = Integer.valueOf(atkArray[1]);
+                    reader.close();
                     return atk;
                 }
+                reader.close();
             }
 
         }catch(Exception e){
@@ -156,8 +160,10 @@ public class FileManager {
                 if(line.startsWith("def")){
                     String[] defArray = line.split(":");
                     int atk = Integer.valueOf(defArray[1]);
+                    reader.close();
                     return atk;
                 }
+                reader.close();
             }
 
         }catch(Exception e){
@@ -174,6 +180,7 @@ public class FileManager {
                 if (line.startsWith("name:")) {
                     String[] nameArray = line.split(":");
                     String name = nameArray[1];
+                    reader.close();
                     return name;
                 }
                 reader.close();
@@ -191,8 +198,10 @@ public class FileManager {
             while((line = reader.readLine()) != null){
                 if(line.startsWith("speed:")){
                     String[] speedArr = line.split(":");
+                    reader.close();
                     return Integer.valueOf(speedArr[1]);
                 }
+                reader.close();
             }
         }catch(Exception e){
             Game.getTextHelper().error("An error occurred while trying to read the speed of a Pokemon.");
@@ -208,8 +217,10 @@ public class FileManager {
                 if(line.startsWith("type:")){
                     String[] typeArray = line.split(":");
                     String type = typeArray[1];
+                    reader.close();
                     return type;
                 }
+                reader.close();
             }
         }catch (Exception e){
             Game.getTextHelper().error("An error occurred while trying to read the type of a Pokemon.");
@@ -225,11 +236,13 @@ public class FileManager {
                 if(line.startsWith("basehp:")){
                     String[] hpArray = line.split(":");
                     int hp = Integer.valueOf(hpArray[1]);
+                    reader.close();
                     return hp;
                 }
+                reader.close();
             }
         }catch (Exception e){
-            Game.getTextHelper().error("An error occurred. 02");
+            Game.getTextHelper().error("An error occurred while trying to read " + file.getName() + "'s HP.");
         }
         return -1;
     }
@@ -242,10 +255,13 @@ public class FileManager {
                 if(line.startsWith("attack1:")){
                     String[] attackArray = line.split(":");
                     String attack = attackArray[1];
+                    reader.close();
                     return attack;
                 }
+                reader.close();
             }
         }catch (Exception e){
+        	Game.getTextHelper().error("An error occurred while trying to read attack slot 1 for " + file.getName() + ".");
             return "none";
         }
         return "none";
@@ -259,11 +275,13 @@ public class FileManager {
                 if(line.startsWith("attack2:")){
                     String[] attackArray = line.split(":");
                     String attack = attackArray[1];
+                    reader.close();
                     return attack;
                 }
+                reader.close();
             }
         }catch (Exception e){
-            return "none";
+            return "An error occurred while trying to read attack slot 2 for " + file.getName() + ".";
         }
         return "none";
     }
@@ -276,11 +294,13 @@ public class FileManager {
                 if(line.startsWith("attack3:")){
                     String[] attackArray = line.split(":");
                     String attack = attackArray[1];
+                    reader.close();
                     return attack;
                 }
+                reader.close();
             }
         }catch (Exception e){
-            return "none";
+            return "An error occurred while trying to read attack slot 3 for " + file.getName() + ".";
         }
         return "none";
     }
@@ -293,15 +313,18 @@ public class FileManager {
                 if(line.startsWith("attack4:")){
                     String[] attackArray = line.split(":");
                     String attack = attackArray[1];
+                    reader.close();
                     return attack;
                 }
+                reader.close();
             }
         }catch (Exception e){
-            return "none";
+            return "An error occurred while trying to read attack slot 4 for " + file.getName() + ".";
         }
         return "none";
     }
 
+    @SuppressWarnings("resource")
     public boolean isValidAttack(File file){
         try{
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -338,6 +361,8 @@ public class FileManager {
                 }
             }
         }catch(Exception e){
+        	Game.getTextHelper().print("Error:");
+        	e.printStackTrace();
             return false;
         }
         return false;
@@ -441,10 +466,23 @@ public class FileManager {
     }
 
     public void deleteFile(File file){
-
+    	try {
+    		file.delete();
+    	}catch(SecurityException s) {
+    		Game.getTextHelper().print("PokeSim is blocked access to deleting files.");
+    	}
+    }
+    
+    //Change attr to repl in specified file.
+    public void modifyAttr(String attr, String repl, File file) {
+    	try {
+    		Game.getTextHelper().print("Editing " + file.getName() + ". Replacing attribute " + attr + " with " + repl + ".");
+    	}catch(Exception e) {
+    		Game.getTextHelper().print("An error occurred while trying to edit a file.");
+    	}
     }
 
-    public void writeAttackFile(){
+    public void writeAttackFile(String filename, String name, String type, int power, int accuracy){
 
     }
 
