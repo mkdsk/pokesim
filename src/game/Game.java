@@ -11,6 +11,8 @@ import java.util.Arrays;
     Add setpoke <pkmn file> command.
     Add arguments for start command.
     
+    experiment with bugs with loading pokemon and attack files.
+
     Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them?)
     Fix del command and add arguments for it.
     
