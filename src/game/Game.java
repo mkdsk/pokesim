@@ -11,13 +11,13 @@ import java.util.Arrays;
     Add setpoke <pkmn file> command.
     Add arguments for start command.
     
-    experiment with bugs with loading pokemon and attack files.
-
-    Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them?)
+    Fix "bound must be positive" error in getRandomPokemon();
+    Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
     
     Make sure types of Pokemon are valid before entering battle.
     Implement battles. Damage calculation
+    Handle invalid Pokemon before battling (no HP specified, etc)
  */
 
 public class Game {
@@ -86,7 +86,7 @@ public class Game {
             text.seperator();
             text.error("\nAn error has occurred while running the game.");
             text.error("Error:");
-            text.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -118,7 +118,7 @@ public class Game {
             else if(input.equalsIgnoreCase("list")){
                 listPokemon();
                 if(fileManager.getPkmn() == 0){
-                    text.print("No Pokemon were found in your directory.");
+                    text.print("You currently have 0 loaded Pokemon.");
                 }
                 text.blank();
             }
@@ -175,7 +175,7 @@ public class Game {
             //Description: Lists all Pokemon, if any.    
             } else if (input.equalsIgnoreCase("list")) {
                 if (fileManager.getPkmn() == 0) {
-                    text.print("No Pokemon were found in your directory.");
+                    text.print("You currently have 0 loaded Pokemon.");
                 }else{
                     listPokemon();
                 }
@@ -236,11 +236,11 @@ public class Game {
                 }
 
             //Description: Start a battle.    
-            }  else if(input.equalsIgnoreCase("start")){
-            	if(fileManager.getPkmn() == 0) {
-            		text.print("You cannot battle because you have no Pokemon loaded.");
-            		gameLoop(true);
-            	}
+            }  else if(Arrays.asList(a_Input).contains("start")){
+                if(fileManager.getPkmn() == 0) {
+                    text.print("You cannot battle because you have no Pokemon loaded.");
+                    gameLoop(true);
+                }
                 listPokemon();
                 String pokemon = text.getStringInput("Filename to battle?: ");
                 for(File file : fileManager.gameDirectory.listFiles()){
@@ -257,7 +257,7 @@ public class Game {
             
             //Description: Delete a file.
             } else if(input.equalsIgnoreCase("del")){
-            	listPokemon();
+                listPokemon();
                 listAttacks();
                 boolean found = false;
                 String delete = text.getStringInput("Which file to delete?: ");
@@ -285,28 +285,28 @@ public class Game {
 
             //Description: Edits a Pokemon file.    
             } else if(Arrays.asList(a_Input).contains("edit")) {
-            	//Usage: edit <file> <attr> <replacement>
-            	if(!(a_Input.length == 4)) {
-            		text.print("Usage: edit <file.poke> <attribute> <replacement>");
-            		text.print("Example: edit charizard.poke speed 500");
-            	}else{
-            		boolean found = false;
-            		for(File file : fileManager.gameDirectory.listFiles()) {
-            			if(file.getName().equals(a_Input[1])){
-            				found = true;
-            				fileManager.modifyAttr(a_Input[2], a_Input[3], file);
-            			}else{
-            				
-            			}
-            		}
-            		if(!found) {
-            			text.print("File not found.");
-            			gameLoop(true);
-            		}
-            	}
+                //Usage: edit <file> <attr> <replacement>
+                if(!(a_Input.length == 4)) {
+                    text.print("Usage: edit <file.poke> <attribute> <replacement>");
+                    text.print("Example: edit charizard.poke speed 500");
+                }else{
+                    boolean found = false;
+                    for(File file : fileManager.gameDirectory.listFiles()) {
+                        if(file.getName().equals(a_Input[1])){
+                            found = true;
+                            fileManager.modifyAttr(a_Input[2], a_Input[3], file);
+                        }else{
+                            
+                        }
+                    }
+                    if(!found) {
+                        text.print("File not found.");
+                        gameLoop(true);
+                    }
+                }
             
             }else if(!Arrays.asList(battleCommands).contains(input)){
-            	//Empty space.
+                //Empty space.
             } 
 
         }
