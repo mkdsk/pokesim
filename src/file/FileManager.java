@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class FileManager {
 
-    public File gameDirectory;
+    public File gameDirectory; //C://PokeSim
 
     public FileManager() {
         //Make gamedir on startup if it does not exist
@@ -18,6 +18,26 @@ public class FileManager {
         }
     }
 
+    /* Returns a file based off it's name. Null if it doesn't exist.*/
+    public File getFile(String filename){
+        for(File file : this.gameDirectory.listFiles()){
+            if(file.getName().equals(filename)){
+                return file;
+            }
+        }
+        return null;
+    }
+    
+    /* Finds out if the specified file exists or not. */
+    public boolean fileExists(String filename){
+        for(File file : this.gameDirectory.listFiles()){
+            if(file.getName().equals(filename)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /*
     Returns a random .poke file from the directory.
      */
@@ -40,6 +60,7 @@ public class FileManager {
 
     }
 
+    /* Returns how many attacks are loaded into the game. */
     public int getAttackCount(){
         int counter = 0;
         for(File file : gameDirectory.listFiles()){
@@ -73,6 +94,7 @@ public class FileManager {
      */
     public boolean isValidFile(File file) {
         try{
+            boolean extcheck = false;
             boolean atkcheck = false;
             boolean defcheck = false;
             boolean spdcheck = false;
@@ -89,18 +111,23 @@ public class FileManager {
                 if(line.startsWith("name:")){
                     namecheck = true;
                 }
+                
                 if(line.startsWith("atk")){
                     atkcheck = true;
                 }
+                
                 if(line.startsWith("def")){
                     defcheck = true;
                 }
+                
                 if(line.startsWith("speed:")){
                     spdcheck = true;
                 }
+                
                 if(line.startsWith("basehp:")){
                     hpcheck = true;
                 }
+                
                 if(line.startsWith("type:")){
                     String[] type = line.split(":");
                     if(Arrays.asList(Game.validTypes).contains(type[1])){
@@ -109,19 +136,28 @@ public class FileManager {
                         typecheck = false;
                     }
                 }
+                
                 if(line.startsWith("attack1:")){
                     attackcheckone = true;
                 }
+                
                 if(line.startsWith("attack2:")){
                     attackchecktwo = true;
                 }
+                
                 if(line.startsWith("attack3:")){
                     attackcheckthree = true;
                 }
+                
                 if(line.startsWith("attack4:")){
                     attackcheckfour = true;
                 }
-                if(spdcheck && defcheck && atkcheck && namecheck && hpcheck && typecheck && attackcheckone && attackchecktwo && attackcheckthree && attackcheckfour){
+                
+                if(file.getName().endsWith(".poke")){
+                    extcheck = true;
+                }
+                
+                if(extcheck && spdcheck && defcheck && atkcheck && namecheck && hpcheck && typecheck && attackcheckone && attackchecktwo && attackcheckthree && attackcheckfour){
                     return true;
                 }else{
                     
@@ -134,6 +170,7 @@ public class FileManager {
         return false;
     }
 
+    /* Gets the attack stat from the specified .pkmn file. */
     public int getAtk(File file){
         try{
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -152,6 +189,7 @@ public class FileManager {
         return 1;
     }
 
+    /* Returns the defense stat of the specified .pkmn file. */
     public int getDef(File file){
         try{
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -170,6 +208,7 @@ public class FileManager {
         return 1;
     }
 
+    /* Returns the name of the specified .pkmn file. */
     public String getName(File file){
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -305,7 +344,6 @@ public class FileManager {
         return "none";
     }
 
-    @SuppressWarnings("resource")
     public boolean isValidAttack(File file){
         try{
             BufferedReader reader = new BufferedReader(new FileReader(file));
