@@ -11,6 +11,7 @@ import java.util.Arrays;
     10/31/17; Added start command, setpoke command, party command
  
     Add check command
+    Add newatk command
    
     Update help cmd with new added cmds.
     
