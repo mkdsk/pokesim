@@ -6,18 +6,26 @@ import text.Text;
 import java.io.File;
 import java.util.Arrays;
 
-/* TODO LIST;;;
-    Add edit command, modifyAttr function. Will edit both atk and pkmn files.
-    Add setpoke <pkmn file> command.
-    Add arguments for start command.
+/* ;;;TODO LIST;;;
+    
+    10/31/17; Added start command, setpoke command, party command
+ 
+    Add check command
+   
+    Update help cmd with new added cmds.
     
     Fix "bound must be positive" error in getRandomPokemon();
     Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
+    Fix modifyAttr() function.
     
+    Update valid commands list with new commands.
+   
+    Print error correctly in game console.
+    Find bugs and fix them. Mostly involving errors loading Pokemon files.
     Make sure types of Pokemon are valid before entering battle.
     Implement battles. Damage calculation
-    Handle invalid Pokemon before battling (no HP specified, etc)
+    Handle invalid Pokemon before battling (no HP specified, etc.)
  */
 
 public class Game {
@@ -32,6 +40,7 @@ public class Game {
     private static String[] validCommands = {"", "help", "battle", "list", "credits", "profile"};
     private static String[] battleCommands = {"random", "list", "back", "new", "edit", "start", "del"};
     private static String name = "Player";
+    private static File party; // Player's party pokemon used in battle.
 
     // Determine the course of the program
     private static boolean inBattleMenu = false;
@@ -152,14 +161,16 @@ public class Game {
             
             //Description: Displays commands used in battle menu
             if (input.equalsIgnoreCase("help")) {
-                text.print("- start to battle a specific Pokemon.");
+                text.print("- start <file> to battle a specific Pokemon.");
                 text.print("- random to battle a random Pokemon.");
                 text.print("- back to return to the main menu.");
                 text.print("- list to list the available Pokemon to battle");
                 text.print("- del to delete a Pokemon or attack.");
-                text.print("- edit to edit a Pokemon.");
+                text.print("- edit <file> to edit a Pokemon.");
                 text.print("- new to create a new Pokemon.");
                 text.print("- attacks to list your loaded attacks.");
+                text.print("- setpoke <file> to set your battle Pokemon.");
+                text.print("- party to view your current party Pokemon.");
                 text.blank();
 
             //Description: Returns user to main menu.
@@ -237,23 +248,20 @@ public class Game {
 
             //Description: Start a battle.    
             }  else if(Arrays.asList(a_Input).contains("start")){
-                if(fileManager.getPkmn() == 0) {
+                if(fileManager.getPkmn() == 0 && a_Input[0].equals("start")) {
                     text.print("You cannot battle because you have no Pokemon loaded.");
                     gameLoop(true);
                 }
-                listPokemon();
-                String pokemon = text.getStringInput("Filename to battle?: ");
-                for(File file : fileManager.gameDirectory.listFiles()){
-                    if(file.getName().equalsIgnoreCase(pokemon)){
-                        if(fileManager.isValidFile(file)){
-                            battler.battle(file);
-                        }else{
-                            text.print("File " + file.getName() + " is not a valid file to battle.");
-                            gameLoop(true);
-                        }
-                    }
+                if(a_Input.length != 2){
+                    text.print("Usage: start <file>");
+                    gameLoop(true);
                 }
-                text.print("File not found.");
+                if(fileManager.fileExists(a_Input[1])){
+                    battler.battle(fileManager.getFile(a_Input[1]));
+                }else{
+                    text.print("File not found!");
+                }
+                
             
             //Description: Delete a file.
             } else if(input.equalsIgnoreCase("del")){
@@ -283,7 +291,7 @@ public class Game {
                 }
                 text.blank();
 
-            //Description: Edits a Pokemon file.    
+            //Description: Edits a .pkmn file or .atk file.
             } else if(Arrays.asList(a_Input).contains("edit")) {
                 //Usage: edit <file> <attr> <replacement>
                 if(!(a_Input.length == 4)) {
@@ -305,10 +313,36 @@ public class Game {
                     }
                 }
             
-            }else if(!Arrays.asList(battleCommands).contains(input)){
-                //Empty space.
-            } 
-
+            }else if(Arrays.asList(a_Input).contains("setpoke")){
+                if(fileManager.getPkmn() == 0 && a_Input[0].equals("setpoke")){
+                    text.print("You must have atleast one Pokemon to set as your current Pokemon.");                   
+                    gameLoop(true);
+                }
+                if(a_Input.length != 2){
+                    text.print("Usage: setpoke <file>");
+                    gameLoop(true);
+                }
+                if(fileManager.fileExists(a_Input[1])){
+                    if(fileManager.isValidFile(fileManager.getFile(a_Input[1]))){
+                        party = fileManager.getFile(a_Input[1]);
+                        text.print("Party member #1 set to " + fileManager.getName(fileManager.getFile(a_Input[1])));
+                    }else{
+                        text.print("The specified file is not a valid Pokemon file.");
+                    }
+                }else{
+                    text.print("File not found.");
+                }
+                
+            }else if(input.equalsIgnoreCase("party")){
+                if(party == null){
+                    text.print("You haven't set your party Pokmeon yet. Use setpoke <file>.");
+                    gameLoop(true);
+                }
+                    
+                text.print("File/Name/Atk/Def/Speed/Type/HP/Attack/Attack/Attack/Attack");
+                text.print("===========================================================");
+                fileManager.printInfo(party);
+            }
         }
     }
 
