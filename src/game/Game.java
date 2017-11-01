@@ -9,12 +9,10 @@ import java.util.Arrays;
 /* ;;;TODO LIST;;;
     
     10/31/17; Added start command, setpoke command, party command
- 
-    Add check command
-    Add newatk command
-   
-    Update help cmd with new added cmds.
+    11/1/17; Added newatk,
     
+    Add check command
+  
     Fix "bound must be positive" error in getRandomPokemon();
     Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
@@ -26,7 +24,8 @@ import java.util.Arrays;
     Find bugs and fix them. Mostly involving errors loading Pokemon files.
     Make sure types of Pokemon are valid before entering battle.
     Implement battles. Damage calculation
-    Handle invalid Pokemon before battling (no HP specified, etc.)
+    Handle invalid Pokemon before battling (no HP specified, etc)
+    Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:")
  */
 
 public class Game {
@@ -169,6 +168,7 @@ public class Game {
                 text.print("- del to delete a Pokemon or attack.");
                 text.print("- edit <file> to edit a Pokemon.");
                 text.print("- new to create a new Pokemon.");
+                text.print("- newatk to create a new attack.");
                 text.print("- attacks to list your loaded attacks.");
                 text.print("- setpoke <file> to set your battle Pokemon.");
                 text.print("- party to view your current party Pokemon.");
@@ -343,6 +343,47 @@ public class Game {
                 text.print("File/Name/Atk/Def/Speed/Type/HP/Attack/Attack/Attack/Attack");
                 text.print("===========================================================");
                 fileManager.printInfo(party);
+                
+            }else if (input.equalsIgnoreCase("newatk")){
+                String in = text.getStringInput("Create new attack? (y/n): ");
+                while(!in.equalsIgnoreCase("y") && !in.equalsIgnoreCase("n") && !in.equalsIgnoreCase("back")){
+                    in = text.getStringInput("Create new attack? (y/n): ");
+                }
+                if(in.equalsIgnoreCase("back")){
+                    gameLoop(true);
+                }
+                else if(in.equalsIgnoreCase("y")){
+                    try{
+                        String filename = text.getStringInput("Filename?: ");
+                        String name = text.getStringInput("Name?: ");
+                        String type = text.getStringInput("Type?: ");
+                        String pwr = text.getStringInput("Power?: ");
+                        String acc = text.getStringInput("Accuracy?: ");
+                        
+                        if(filename.length() < 1 || filename.length() > 16 || name.length() > 16 || name.length() < 1 || !Arrays.asList(validTypes).contains(type) || Integer.valueOf(acc) > 100 || Integer.valueOf(acc) < 1){
+                            if(name.length() > 16 || name.length() < 1){
+                                text.print("Attack name must be between 1 and 16 characters.");
+                            }
+                            if(!Arrays.asList(validTypes).contains(type)){
+                                text.print(type + " is not a valid type.");
+                            }
+                            if(Integer.valueOf(acc) > 100 || Integer.valueOf(acc) < 1){
+                                text.print("Accuracy must be between 1 and 100.");
+                            }
+                            if(filename.length() < 1 || filename.length() > 16){
+                                text.print("Filename must be between 1 and 16 characters.");
+                            }
+                            gameLoop(true);
+                        }
+                        //validate
+                        text.print("Validating attack...");
+                        type = type.replace(type.charAt(0), Character.toUpperCase(type.charAt(0)));
+                        fileManager.writeAttackFile(filename + ".atk", name, type, Integer.valueOf(pwr), Integer.valueOf(acc));
+                        text.print(fileManager.getAttackCount() + " attacks initialized.");
+                    }catch(Exception e){
+                        text.print("An error occurred while reading input.");
+                    }
+                }
             }
         }
     }
