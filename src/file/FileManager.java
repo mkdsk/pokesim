@@ -42,22 +42,26 @@ public class FileManager {
     Returns a random .poke file from the directory.
      */
     public File getRandomPokemon() {
-        File[] list = gameDirectory.listFiles();
-        int length = list.length;
-        if(length == 0 || length < 0){
-            Game.getTextHelper().print("Your Pokemon directory is empty.");
-            return null;
-        }else{
-            Random r = new Random();
-            int file = r.nextInt(length + 1); //bound must be positive?
-            while(!isValidFile(list[file])){
-                file = r.nextInt(length + 1);
+        try{
+            File[] list = gameDirectory.listFiles();
+            int length = list.length;
+            if(length == 0 || length < 0){
+                Game.getTextHelper().print("Your Pokemon directory is empty.");
+                return null;
+            }else{
+                Random r = new Random();
+                int file = r.nextInt(length + 1); //bound must be positive?
+                while(!isValidFile(list[file])){
+                    file = r.nextInt(length - 1 + 1) + 1;
+                }
+                Game.getTextHelper().print("Found Pokemon #" + Integer.valueOf(file).toString());
+                this.printInfo(list[file]);
+                return list[file];
             }
-            Game.getTextHelper().print("Found Pokemon #" + Integer.valueOf(file).toString());
-            this.printInfo(list[file]);
-            return list[file];
+        }catch(Exception e){
+            
         }
-
+        return null;
     }
 
     /* Returns how many attacks are loaded into the game. */
@@ -502,7 +506,20 @@ public class FileManager {
     }
 
     public void writeAttackFile(String filename, String name, String type, int power, int accuracy){
-
+        try{
+            File f = new File("C:" + File.separator + "PokeSim" + File.separator + filename);
+            FileWriter writer = new FileWriter(f);
+            PrintWriter w = new PrintWriter(writer);
+            w.print("name:" + name);
+            w.print("\ntype:" + type);
+            w.print("\npower:" + power);
+            w.print("\naccuracy:" + accuracy);
+            w.close();
+        }catch(Exception e){
+            Game.getTextHelper().print("Error: ");
+            Game.getTextHelper().print(e.getMessage());
+           
+        }
     }
 
     public void writePokemonFile(String filename, String name, int atk, int def, int spd, String type, String hp, String attack_one, String attack_two, String attack_three, String attack_four){
