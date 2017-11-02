@@ -12,19 +12,20 @@ import java.util.Arrays;
     11/1/17; Added newatk,
     
     Add check command
+    Add edit command (void modifyAttr)
   
-    Fix "bound must be positive" error in getRandomPokemon();
-    Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
+    Fix getRandomPokemon()
+    Fix :FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
-    Fix modifyAttr() function.
     
     Update valid commands list with new commands.
    
     Print error correctly in game console.
     Find bugs and fix them. Mostly involving errors loading Pokemon files.
-    Make sure types of Pokemon are valid before entering battle.
-    Implement battles. Damage calculation
+    Implement battles, damage calculation functions.
     Handle invalid Pokemon before battling (no HP specified, etc)
+    Add damage over time attacks (Leech Seed, etc)
+    Add secondary type of attacks (Physical/StatRaise/Weather) move:Physical, move2:StatRaise for multiple effects in one attack.
     Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:")
  */
 
