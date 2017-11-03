@@ -9,23 +9,20 @@ import java.util.Arrays;
 /* ;;;TODO LIST;;;
     
     10/31/17; Added start command, setpoke command, party command
-    11/1/17; Added newatk,
+    11/1/17; Added newatk
+    11/3/17; Added atkExists() for battling and started to code battling.
     
+    Add edit command
     Add check command
-    Add edit command (void modifyAttr)
+    Add cls command
   
-    Fix getRandomPokemon()
-    Fix :FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
+    Fix getRandomPokemon() sometimes throwing error
+    Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
-    
-    Update valid commands list with new commands.
    
     Print error correctly in game console.
     Find bugs and fix them. Mostly involving errors loading Pokemon files.
-    Implement battles, damage calculation functions.
-    Handle invalid Pokemon before battling (no HP specified, etc)
-    Add damage over time attacks (Leech Seed, etc)
-    Add secondary type of attacks (Physical/StatRaise/Weather) move:Physical, move2:StatRaise for multiple effects in one attack.
+    Implement battles. Damage calculation
     Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:")
  */
 
@@ -163,6 +160,7 @@ public class Game {
             //Description: Displays commands used in battle menu
             if (input.equalsIgnoreCase("help")) {
                 text.print("- start <file> to battle a specific Pokemon.");
+                text.print("- cls to clear the console window.");
                 text.print("- random to battle a random Pokemon.");
                 text.print("- back to return to the main menu.");
                 text.print("- list to list the available Pokemon to battle");
@@ -385,6 +383,8 @@ public class Game {
                         text.print("An error occurred while reading input.");
                     }
                 }
+            }else if(input.equalsIgnoreCase("cls")){
+                
             }
         }
     }
@@ -420,6 +420,10 @@ public class Game {
         return text;
     }
 
+    public static File getPartyPokemon(){
+        return party != null ? party : null;
+    }
+    
     public static boolean getMenuState(){
         return inMenu ? inMenu : inBattleMenu;
     }
