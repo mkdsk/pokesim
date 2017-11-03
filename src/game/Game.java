@@ -10,16 +10,19 @@ import java.util.Arrays;
     
     10/31/17; Added start command, setpoke command, party command
     11/1/17; Added newatk
-    11/3/17; Added atkExists() for battling and started to code battling.
+    11/3/17; Added atkExists() and started to code battling.
     
+	Change isValidAtk and isValidFile to check for empty whitespace after :, and return false.
+	Change isValidFile, make it so that it calls atkExists() for each attack the Pkmn has.
+	
     Add edit command
     Add check command
-    Add cls command
+    Add cls command (clear screen)
   
     Fix getRandomPokemon() sometimes throwing error
     Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
-   
+    
     Print error correctly in game console.
     Find bugs and fix them. Mostly involving errors loading Pokemon files.
     Implement battles. Damage calculation
