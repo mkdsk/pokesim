@@ -466,7 +466,19 @@ public class FileManager {
             Game.getTextHelper().print("Found invalid attack file " + file.getName() + ", ignoring!");
         }
     }
-
+    
+    /* Finds out if a attack of the specified name exists. */
+    public boolean atkExists(String name){
+        for(File file : this.gameDirectory.listFiles()){
+            if(file.getName().endsWith(".atk")){
+                if(this.getAtkName(file).equalsIgnoreCase(name) && this.isValidAttack(file)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     /*
     Prints a Pokemon's info off of a file.
      */
