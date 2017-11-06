@@ -1,3 +1,10 @@
+package game;
+
+import battle.Battler;
+import file.FileManager;
+import text.Text;
+import java.io.File;
+import java.util.Arrays;
 
 /* ;;;TODO LIST;;;
     
