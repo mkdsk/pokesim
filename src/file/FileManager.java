@@ -113,23 +113,73 @@ public class FileManager {
             String line;
             while ((line = reader.readLine()) != null){
                 if(line.startsWith("name:")){
-                    namecheck = true;
+                    String[] l = line.split(":");
+                    if(l[1].isEmpty()){
+                        namecheck = false;
+                    }else{
+                        namecheck = true;    
+                    }
                 }
                 
                 if(line.startsWith("atk")){
-                    atkcheck = true;
+                    String[] l = line.split(":");
+                    try
+                    {
+                        int k = Integer.parseInt(l[1]);
+                        if(l[1].isEmpty()){
+                            atkcheck = false;;
+                        }else{
+                            atkcheck = true;
+                        }
+                    }catch(Exception e){
+                        atkcheck = false;
+                    }
+                    
                 }
                 
                 if(line.startsWith("def")){
-                    defcheck = true;
+                    String[] l = line.split(":");
+                    try
+                    {
+                        int k = Integer.parseInt(l[1]);
+                        if(l[1].isEmpty()){
+                            defcheck = false;;
+                        }else{
+                            defcheck = true;
+                        }
+                    }catch(Exception e){
+                        defcheck = false;
+                    }
                 }
                 
                 if(line.startsWith("speed:")){
-                    spdcheck = true;
+                    String[] l = line.split(":");
+                    try
+                    {
+                        int k = Integer.parseInt(l[1]);
+                        if(l[1].isEmpty()){
+                            spdcheck = false;;
+                        }else{
+                            spdcheck = true;
+                        }
+                    }catch(Exception e){
+                        spdcheck = false;
+                    }
                 }
                 
                 if(line.startsWith("basehp:")){
-                    hpcheck = true;
+                    try
+                    {
+                        String[] l = line.split(":");
+                        int k = Integer.parseInt(l[1]);
+                        if(l[1].isEmpty()){
+                            hpcheck = false;
+                        }else{
+                            hpcheck = true;
+                        }
+                    }catch(Exception e){
+                        hpcheck = false;
+                    }
                 }
                 
                 if(line.startsWith("type:")){
