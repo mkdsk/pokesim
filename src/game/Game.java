@@ -1,30 +1,19 @@
-package game;
-
-import battle.Battler;
-import file.FileManager;
-import text.Text;
-import java.io.File;
-import java.util.Arrays;
 
 /* ;;;TODO LIST;;;
     
     10/31/17; Added start command, setpoke command, party command
-    11/1/17; Added newatk
+    11/1/17; Added newatk.
     11/3/17; Added atkExists() and started to code battling.
-    
-	Change isValidAtk and isValidFile to check for empty whitespace after :, and return false.
-	Change isValidFile, make it so that it calls atkExists() for each attack the Pkmn has.
-	
-    Add edit command
-    Add check command
+    11/6/17; Better checking for valid POKE files, check command.
+     
     Add cls command (clear screen)
   
-    Fix getRandomPokemon() sometimes throwing error
+    Fix getRandomPokemon() sometimes throwing NullPointerException
     Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
-    
-    Print error correctly in game console.
-    Find bugs and fix them. Mostly involving errors loading Pokemon files.
+   
+    Add edit command
+    Print error correctly in game console and save crash files.
     Implement battles. Damage calculation
     Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:")
  */
@@ -163,16 +152,17 @@ public class Game {
             //Description: Displays commands used in battle menu
             if (input.equalsIgnoreCase("help")) {
                 text.print("- start <file> to battle a specific Pokemon.");
+                text.print("- setpoke <file> to set your battle Pokemon.");
+                text.print("- edit <file> to edit a Pokemon.");
+                text.print("- check <file> to check syntax for a file.");
                 text.print("- cls to clear the console window.");
                 text.print("- random to battle a random Pokemon.");
                 text.print("- back to return to the main menu.");
                 text.print("- list to list the available Pokemon to battle");
                 text.print("- del to delete a Pokemon or attack.");
-                text.print("- edit <file> to edit a Pokemon.");
                 text.print("- new to create a new Pokemon.");
                 text.print("- newatk to create a new attack.");
                 text.print("- attacks to list your loaded attacks.");
-                text.print("- setpoke <file> to set your battle Pokemon.");
                 text.print("- party to view your current party Pokemon.");
                 text.blank();
 
@@ -388,6 +378,29 @@ public class Game {
                 }
             }else if(input.equalsIgnoreCase("cls")){
                 
+            }else if(Arrays.asList(a_Input).contains("check")){
+                if(a_Input.length != 2){
+                    text.print("Usage: check <file>");
+                }else{
+                    if(fileManager.fileExists(a_Input[1])){
+                        if(a_Input[1].endsWith("poke")){
+                            if(fileManager.isValidFile(fileManager.getFile(a_Input[1]))){
+                                text.print(a_Input[1] + " is a valid POKE file.");
+                            }else{
+                                text.print(a_Input[1] + " is not a valid POKE file.");
+                            }
+                        }
+                        else if(a_Input[1].endsWith("atk")){
+                            if(fileManager.isValidAttack(fileManager.getFile(a_Input[1]))){
+                                text.print(a_Input[1] + " is a valid attack file.");
+                            }else{
+                                text.print(a_Input[1] + " is not a valid attack file.");
+                            }
+                        }
+                    }else{
+                        text.print("File not found.");
+                    }
+                }
             }
         }
     }
