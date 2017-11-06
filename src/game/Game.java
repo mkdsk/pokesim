@@ -11,10 +11,10 @@ import java.util.Arrays;
     10/31/17; Added start command, setpoke command, party command
     11/1/17; Added newatk.
     11/3/17; Added atkExists() and started to code battling.
-    11/6/17; Better checking for valid POKE files, check command.
-     
-    Add cls command (clear screen)
+    11/6/17; Better checking for POKE files, check command, cls command.
   
+    Add better checking for ATK files (blank spaces, not ints, etc)
+    
     Fix getRandomPokemon() sometimes throwing NullPointerException
     Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
@@ -45,7 +45,7 @@ public class Game {
 
     public static final String GAME_NAME = "PokeSim";
     public static final String GAME_REL_VER = "Pre-Alpha";
-    public static final String GAME_VERSION = "0.31a";
+    public static final String GAME_VERSION = "0.32a";
 
     public static void main(String[] args){
         //get args and use them?
@@ -58,8 +58,7 @@ public class Game {
             text.seperator();
             text.print("Starting " + GAME_NAME + " " + GAME_REL_VER + " v" + GAME_VERSION);
             text.seperator();
-            text.print("Initalized File Manager...");
-            text.print("Initalized Text functions...");
+            text.print("Initialized classes...");
             text.print("Loading files...");
             if(fileManager.getPkmn() == 0){
                 text.error("Zero Pokemon were found in your PokeSim directory. Make sure");
@@ -384,7 +383,9 @@ public class Game {
                     }
                 }
             }else if(input.equalsIgnoreCase("cls")){
-                
+                for(int i = 0; i < 300; i++){
+                    System.out.println("");
+                }
             }else if(Arrays.asList(a_Input).contains("check")){
                 if(a_Input.length != 2){
                     text.print("Usage: check <file>");
