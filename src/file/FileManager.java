@@ -192,19 +192,32 @@ public class FileManager {
                 }
                 
                 if(line.startsWith("attack1:")){
-                    attackcheckone = true;
+                    String[] k = line.split(":");
+                    if(this.atkExists(k[1])){
+                        attackcheckone = true;
+                    }
+                    
                 }
                 
                 if(line.startsWith("attack2:")){
-                    attackchecktwo = true;
+                    String[] k = line.split(":");
+                    if(this.atkExists(k[1])){
+                        attackchecktwo = true;
+                    }
                 }
                 
                 if(line.startsWith("attack3:")){
-                    attackcheckthree = true;
+                    String[] k = line.split(":");
+                    if(this.atkExists(k[1])){
+                        attackcheckthree = true;
+                    }
                 }
                 
                 if(line.startsWith("attack4:")){
-                    attackcheckfour = true;
+                    String[] k = line.split(":");
+                    if(this.atkExists(k[1])){
+                        attackcheckfour = true;
+                    }
                 }
                 
                 if(file.getName().endsWith(".poke")){
@@ -408,7 +421,13 @@ public class FileManager {
             boolean accuracy = false;
             while((line = reader.readLine()) != null){
                 if(line.startsWith("name:")){
-                    name = true;
+                    String[] l = line.split(":");
+                    if(l[1].isEmpty()){
+                        name = false;
+                    }else{
+                        name = true;
+                    }
+                    
                 }
                 if(line.startsWith("type:")){
                     String[] typeArr = line.split(":");
@@ -419,15 +438,43 @@ public class FileManager {
                     }
                 }
                 if(line.startsWith("power:")){
-                    power = true;
+                    boolean test = true;
+                    try
+                    {
+                        String[] l = line.split(":");
+                        if(l[1].isEmpty()){
+                            test = false;
+                            power = false;
+                        }else{
+                            Integer.parseInt(l[1]);
+                        }
+                    }catch(Exception e){
+                        test = false;
+                    }
+                    if(test){
+                        power = true;
+                    }else{
+                        power = false;
+                    }
+                    
                 }
                 if(line.startsWith("accuracy:")){
-                    String[] accArr = line.split(":");
-                    if(Integer.valueOf(accArr[1]) > 100 || Integer.valueOf(accArr[1]) < 1){
-                        accuracy = false;
-                    }else{
+                    boolean test2 = true;
+                    try{
+                        String[] accArr = line.split(":");
+                        if(Integer.valueOf(accArr[1]) > 100 || Integer.valueOf(accArr[1]) < 1){
+                            test2 = false;
+                            accuracy = false;
+                        }else{
+                            
+                        }
+                    }catch(Exception e){
+                        test2 = false;
+                    }
+                    if(test2){
                         accuracy = true;
                     }
+                    
                 }
                 if(accuracy && power && type && name){
                     return true;
