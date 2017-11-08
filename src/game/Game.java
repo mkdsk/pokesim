@@ -8,18 +8,19 @@ import java.util.Arrays;
 
 /* ;;;TODO LIST;;;
     
-    10/31/17; Added start command, setpoke command, party command
+    10/31/17; Added start command, setpoke command, party command.
     11/1/17; Added newatk.
     11/3/17; Added atkExists() and started to code battling.
     11/6/17; Better checking for POKE files, check command, cls command.
-  
-    Add better checking for ATK files (blank spaces, not ints, etc)
+    11/8/17; Better checking for ATK files, better checking for valid attacks in .POKE files.
+    
     
     Fix getRandomPokemon() sometimes throwing NullPointerException
     Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
    
-    Add edit command
+    Add edit command for .ATK and .POKE with args.
+    
     Print error correctly in game console and save crash files.
     Implement battles. Damage calculation
     Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:")
@@ -164,7 +165,7 @@ public class Game {
                 text.print("- cls to clear the console window.");
                 text.print("- random to battle a random Pokemon.");
                 text.print("- back to return to the main menu.");
-                text.print("- list to list the available Pokemon to battle");
+                text.print("- list to list the available Pokemon to battle.");
                 text.print("- del to delete a Pokemon or attack.");
                 text.print("- new to create a new Pokemon.");
                 text.print("- newatk to create a new attack.");
@@ -227,6 +228,22 @@ public class Game {
                             if(Integer.parseInt(hp) < 1){
                                 text.print("HP must be between 1 and 2147483647.");
                             }
+                            gameLoop(true);
+                        }
+                        else if(!fileManager.atkExists(attackone)){
+                            text.print(attackone + " is not a valid attack.");
+                            gameLoop(true);
+                        }
+                        else if(!fileManager.atkExists(attacktwo)){
+                            text.print(attacktwo + " is not a valid attack.");
+                            gameLoop(true);
+                        }
+                        else if(!fileManager.atkExists(attackthree)){
+                            text.print(attackthree + " is not a valid attack.");
+                            gameLoop(true);
+                        }
+                        else if(!fileManager.atkExists(attackfour)){
+                            text.print(attackfour + " is not a valid attack.");
                             gameLoop(true);
                         }
                         //save file now, it is valid.
