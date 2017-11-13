@@ -14,10 +14,9 @@ import java.util.Arrays;
     11/6/17; Better checking for POKE files, check command, cls command.
     11/8/17; Better checking for ATK files, better checking for valid attacks in .POKE files.
     11/9/17; Changed how the battle loop begins to load.
-    11/13/17; Reworked battle logic a bit more.
+    11/13/17; Reworked battle logic a bit more, fixed random command throwing exception.
     
     Make check command give info on why Pkmn is not valid.
-    Fix getRandomPokemon() sometimes throwing NullPointerException
     Fix del command and add arguments for it.
    
     Add edit command for .ATK and .POKE with args.
