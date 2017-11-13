@@ -13,14 +13,17 @@ import java.util.Arrays;
     11/3/17; Added atkExists() and started to code battling.
     11/6/17; Better checking for POKE files, check command, cls command.
     11/8/17; Better checking for ATK files, better checking for valid attacks in .POKE files.
+    11/9/17; Changed how the battle loop begins to load.
+    11/13/17; Reworked battle logic a bit more.
     
-    
+    Make check command give info on why Pkmn is not valid.
     Fix getRandomPokemon() sometimes throwing NullPointerException
-    Fix FATAL: Fix resource leaks. (Make seperate readers for each function and close them.)
     Fix del command and add arguments for it.
    
     Add edit command for .ATK and .POKE with args.
     
+    Add profile saving so we don't have to type setpoke each time on startup.
+    Fix misc bugs.
     Print error correctly in game console and save crash files.
     Implement battles. Damage calculation
     Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:")
@@ -272,10 +275,10 @@ public class Game {
                     text.print("Usage: start <file>");
                     gameLoop(true);
                 }
-                if(fileManager.fileExists(a_Input[1])){
+                if(fileManager.fileExists(a_Input[1]) && fileManager.getFile(a_Input[1]).getName().endsWith(".poke")){
                     battler.battle(fileManager.getFile(a_Input[1]));
                 }else{
-                    text.print("File not found!");
+                    text.print("File not found or file is not a POKE file.");
                 }
                 
             
@@ -351,7 +354,7 @@ public class Game {
                 
             }else if(input.equalsIgnoreCase("party")){
                 if(party == null){
-                    text.print("You haven't set your party Pokmeon yet. Use setpoke <file>.");
+                    text.print("You haven't set your party Pokemon yet. Use setpoke <file>.");
                     gameLoop(true);
                 }
                     
@@ -467,6 +470,10 @@ public class Game {
     
     public static boolean getMenuState(){
         return inMenu ? inMenu : inBattleMenu;
+    }
+    
+    public static String getProfile(){
+        return name;
     }
 
 }
