@@ -15,17 +15,17 @@ import java.util.Arrays;
     11/8/17; Better checking for ATK files, better checking for valid attacks in .POKE files.
     11/9/17; Changed how the battle loop begins to load.
     11/13/17; Reworked battle logic a bit more, fixed random command throwing exception.
-    
-    Make check command give info on why Pkmn is not valid.
-    Fix del command and add arguments for it.
+    1//15/17; Added open <file> command.
    
+    Fix del command and add arguments for it.
     Add edit command for .ATK and .POKE with args.
     
     Add profile saving so we don't have to type setpoke each time on startup.
-    Fix misc bugs.
+    Fix errors
     Print error correctly in game console and save crash files.
-    Implement battles. Damage calculation
-    Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:")
+    Implement battles. 
+    Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:").
+    Add multiplayer online battling, spectating, IVs/EV editing, graphics.
  */
 
 public class Game {
@@ -47,17 +47,21 @@ public class Game {
     private static boolean inMenu = false;
 
     public static final String GAME_NAME = "PokeSim";
-    public static final String GAME_REL_VER = "Pre-Alpha";
-    public static final String GAME_VERSION = "0.32a";
+    public static final String GAME_REL_VER = "Alpha";
+    public static final String GAME_VERSION = "0.33a";
+    
+    private static String[] cmd;
 
     public static void main(String[] args){
         //get args and use them?
-        init();
+        cmd = args;
+        init(cmd);
     }
 
-    public static void init(){
+    public static void init(String[] args){
         try{
             fileManager = new FileManager();
+            if(args.length == 0) text.print("No arguments recieved.");
             text.seperator();
             text.print("Starting " + GAME_NAME + " " + GAME_REL_VER + " v" + GAME_VERSION);
             text.seperator();
@@ -100,7 +104,7 @@ public class Game {
 
     /* All commands are dealt with within this function.
        Parameters: battle (Determines whether to restart the 
-       loop in the battle menu or the regular menu. 
+       loop in the battle menu or the regular menu.)
     */
     public static void gameLoop(boolean battle){
         if(battle){
@@ -162,8 +166,9 @@ public class Game {
             if (input.equalsIgnoreCase("help")) {
                 text.print("- start <file> to battle a specific Pokemon.");
                 text.print("- setpoke <file> to set your battle Pokemon.");
-                text.print("- edit <file> to edit a Pokemon.");
+                text.print("- edit <file> <attr> <repl> to edit a Pokemon.");
                 text.print("- check <file> to check syntax for a file.");
+                text.print("- open <file> to print a file's contents.");
                 text.print("- cls to clear the console window.");
                 text.print("- random to battle a random Pokemon.");
                 text.print("- back to return to the main menu.");
@@ -427,6 +432,16 @@ public class Game {
                     }else{
                         text.print("File not found.");
                     }
+                }
+            }else if(Arrays.asList(a_Input).contains("open")){
+                if(a_Input.length != 2){
+                    text.print("Usage: open <file>");
+                    gameLoop(true);
+                }
+                if(fileManager.fileExists(a_Input[1])){
+                    fileManager.open(fileManager.getFile(a_Input[1]));
+                }else{
+                    text.print("File not found.");
                 }
             }
         }
