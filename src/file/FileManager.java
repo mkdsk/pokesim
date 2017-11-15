@@ -27,7 +27,7 @@ public class FileManager {
         }
         return null;
     }
-    
+
     /* Finds out if the specified file exists or not. */
     public boolean fileExists(String filename){
         for(File file : this.gameDirectory.listFiles()){
@@ -37,7 +37,7 @@ public class FileManager {
         }
         return false;
     }
-    
+
     /*
     Returns a random .poke file from the directory.
      */
@@ -50,16 +50,16 @@ public class FileManager {
                 return null;
             }else{
                 Random r = new Random();
-                int file = r.nextInt(length + 1); //bound must be positive?
+                int file = r.nextInt(length +1 - 1); //bound must be positive?
                 while(!isValidFile(list[file])){
-                    file = r.nextInt(length - 1 + 1) + 1;
+                    file = r.nextInt(length +1 - 1);
                 }
                 Game.getTextHelper().print("Found Pokemon #" + Integer.valueOf(file).toString());
                 this.printInfo(list[file]);
                 return list[file];
             }
-        }catch(Exception e){
-            
+        }catch(NullPointerException e){
+            Game.gameLoop(true);
         }
         return null;
     }
@@ -109,9 +109,9 @@ public class FileManager {
             boolean attackchecktwo = false;
             boolean attackcheckthree = false;
             boolean attackcheckfour = false;
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader br_validf = new BufferedReader(new FileReader(file));
             String line;
-            while ((line = reader.readLine()) != null){
+            while ((line = br_validf.readLine()) != null){
                 if(line.startsWith("name:")){
                     String[] l = line.split(":");
                     if(l[1].isEmpty()){
@@ -120,7 +120,7 @@ public class FileManager {
                         namecheck = true;    
                     }
                 }
-                
+
                 if(line.startsWith("atk")){
                     String[] l = line.split(":");
                     try
@@ -134,9 +134,9 @@ public class FileManager {
                     }catch(Exception e){
                         atkcheck = false;
                     }
-                    
+
                 }
-                
+
                 if(line.startsWith("def")){
                     String[] l = line.split(":");
                     try
@@ -151,7 +151,7 @@ public class FileManager {
                         defcheck = false;
                     }
                 }
-                
+
                 if(line.startsWith("speed:")){
                     String[] l = line.split(":");
                     try
@@ -166,7 +166,7 @@ public class FileManager {
                         spdcheck = false;
                     }
                 }
-                
+
                 if(line.startsWith("basehp:")){
                     try
                     {
@@ -181,7 +181,7 @@ public class FileManager {
                         hpcheck = false;
                     }
                 }
-                
+
                 if(line.startsWith("type:")){
                     String[] type = line.split(":");
                     if(Arrays.asList(Game.validTypes).contains(type[1])){
@@ -190,48 +190,48 @@ public class FileManager {
                         typecheck = false;
                     }
                 }
-                
+
                 if(line.startsWith("attack1:")){
                     String[] k = line.split(":");
                     if(this.atkExists(k[1])){
                         attackcheckone = true;
                     }
-                    
+
                 }
-                
+
                 if(line.startsWith("attack2:")){
                     String[] k = line.split(":");
                     if(this.atkExists(k[1])){
                         attackchecktwo = true;
                     }
                 }
-                
+
                 if(line.startsWith("attack3:")){
                     String[] k = line.split(":");
                     if(this.atkExists(k[1])){
                         attackcheckthree = true;
                     }
                 }
-                
+
                 if(line.startsWith("attack4:")){
                     String[] k = line.split(":");
                     if(this.atkExists(k[1])){
                         attackcheckfour = true;
                     }
                 }
-                
+
                 if(file.getName().endsWith(".poke")){
                     extcheck = true;
                 }
-                
+
                 if(extcheck && spdcheck && defcheck && atkcheck && namecheck && hpcheck && typecheck && attackcheckone && attackchecktwo && attackcheckthree && attackcheckfour){
                     return true;
                 }else{
-                    
+
                 }
             }
 
-            }catch (Exception e){
+        }catch (Exception e){
             return false;
         }
         return false;
@@ -240,9 +240,9 @@ public class FileManager {
     /* Gets the attack stat from the specified .pkmn file. */
     public int getAtk(File file){
         try{
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader br_atkp = new BufferedReader(new FileReader(file));
             String line;
-            while ((line = reader.readLine()) != null){
+            while ((line = br_atkp.readLine()) != null){
                 if(line.startsWith("atk")){
                     String[] atkArray = line.split(":");
                     int atk = Integer.valueOf(atkArray[1]);
@@ -259,9 +259,9 @@ public class FileManager {
     /* Returns the defense stat of the specified .pkmn file. */
     public int getDef(File file){
         try{
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader br_defp = new BufferedReader(new FileReader(file));
             String line;
-            while ((line = reader.readLine()) != null){
+            while ((line = br_defp.readLine()) != null){
                 if(line.startsWith("def")){
                     String[] defArray = line.split(":");
                     int atk = Integer.valueOf(defArray[1]);
@@ -278,9 +278,9 @@ public class FileManager {
     /* Returns the name of the specified .pkmn file. */
     public String getName(File file){
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader br_namep = new BufferedReader(new FileReader(file));
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = br_namep.readLine()) != null) {
                 if (line.startsWith("name:")) {
                     String[] nameArray = line.split(":");
                     String name = nameArray[1];
@@ -295,9 +295,9 @@ public class FileManager {
 
     public int getSpd(File file){
         try{
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader br_spdf = new BufferedReader(new FileReader(file));
             String line;
-            while((line = reader.readLine()) != null){
+            while((line = br_spdf.readLine()) != null){
                 if(line.startsWith("speed:")){
                     String[] speedArr = line.split(":");
                     return Integer.valueOf(speedArr[1]);
@@ -311,9 +311,9 @@ public class FileManager {
 
     public String getType(File file){
         try{
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedReader br_typef = new BufferedReader(new FileReader(file));
             String line;
-            while((line = reader.readLine()) != null){
+            while((line = br_typef.readLine()) != null){
                 if(line.startsWith("type:")){
                     String[] typeArray = line.split(":");
                     String type = typeArray[1];
@@ -427,7 +427,7 @@ public class FileManager {
                     }else{
                         name = true;
                     }
-                    
+
                 }
                 if(line.startsWith("type:")){
                     String[] typeArr = line.split(":");
@@ -456,7 +456,7 @@ public class FileManager {
                     }else{
                         power = false;
                     }
-                    
+
                 }
                 if(line.startsWith("accuracy:")){
                     boolean test2 = true;
@@ -466,7 +466,7 @@ public class FileManager {
                             test2 = false;
                             accuracy = false;
                         }else{
-                            
+
                         }
                     }catch(Exception e){
                         test2 = false;
@@ -474,7 +474,7 @@ public class FileManager {
                     if(test2){
                         accuracy = true;
                     }
-                    
+
                 }
                 if(accuracy && power && type && name){
                     return true;
@@ -563,7 +563,7 @@ public class FileManager {
             Game.getTextHelper().print("Found invalid attack file " + file.getName() + ", ignoring!");
         }
     }
-    
+
     /* Finds out if a attack of the specified name exists. */
     public boolean atkExists(String name){
         for(File file : this.gameDirectory.listFiles()){
@@ -575,7 +575,7 @@ public class FileManager {
         }
         return false;
     }
-    
+
     /*
     Prints a Pokemon's info off of a file.
      */
@@ -604,7 +604,7 @@ public class FileManager {
             Game.getTextHelper().print("PokeSim is blocked access to deleting files.");
         }
     }
-    
+
     //Change attr to repl in specified file.
     public void modifyAttr(String attr, String repl, File file) {
         try {
@@ -627,7 +627,7 @@ public class FileManager {
         }catch(Exception e){
             Game.getTextHelper().print("Error: ");
             Game.getTextHelper().print(e.getMessage());
-           
+
         }
     }
 
@@ -652,5 +652,26 @@ public class FileManager {
         }
 
     }
+
+    //print file to window
+    public void open(File file){
+        Game.getTextHelper().seperateText(file.getName());
+        //now print
+        try{
+
+            StringBuilder sb=new StringBuilder("");
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = reader.readLine()) != null){
+                sb.append(line + "\n");
+            }
+            System.out.println(sb);
+        }catch(Exception e){
+            Game.getTextHelper().print("An error occurred while trying to open a file.");
+            Game.getTextHelper().error("Error: " + e.getMessage() + ".");
+        }
+    }
+
+    
 }
 
