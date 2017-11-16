@@ -5,9 +5,9 @@ import java.util.Scanner;
 public class Text {
 
     public Scanner sc;
-	
+    
     public Text(){
-    	sc = new Scanner(System.in);
+        sc = new Scanner(System.in);
     }
 
     /*
@@ -31,6 +31,12 @@ public class Text {
 
     public void blank(){
         System.out.println();
+    }
+    
+    public void clearScreen(){
+        for(int i = 0; i < 300; i++){
+            System.out.println("");
+        }
     }
 
     /*
