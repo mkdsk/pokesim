@@ -42,6 +42,7 @@ public class FileManager {
     Returns a random .poke file from the directory.
      */
     public File getRandomPokemon() {
+        //very rarely this thing throws nullpointer or arrayoutofbounds
         try{
             File[] list = gameDirectory.listFiles();
             int length = list.length;
@@ -58,7 +59,7 @@ public class FileManager {
                 this.printInfo(list[file]);
                 return list[file];
             }
-        }catch(NullPointerException e){
+        }catch(Exception e){
             Game.gameLoop(true);
         }
         return null;
@@ -98,6 +99,7 @@ public class FileManager {
      */
     public boolean isValidFile(File file) {
         try{
+            //Once all these variables are true, we return true.
             boolean extcheck = false;
             boolean atkcheck = false;
             boolean defcheck = false;
@@ -597,14 +599,6 @@ public class FileManager {
         }
     }
 
-    public void deleteFile(File file){
-        try {
-            file.delete();
-        }catch(SecurityException s) {
-            Game.getTextHelper().print("PokeSim is blocked access to deleting files.");
-        }
-    }
-
     //Change attr to repl in specified file.
     public void modifyAttr(String attr, String repl, File file) {
         try {
@@ -658,7 +652,6 @@ public class FileManager {
         Game.getTextHelper().seperateText(file.getName());
         //now print
         try{
-
             StringBuilder sb=new StringBuilder("");
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
