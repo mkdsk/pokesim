@@ -15,14 +15,15 @@ import java.util.Arrays;
     11/8/17; Better checking for ATK files, better checking for valid attacks in .POKE files.
     11/9/17; Changed how the battle loop begins to load.
     11/13/17; Reworked battle logic a bit more, fixed random command throwing exception.
-    1//15/17; Added open <file> command.
+    11/15/17; Added open <file> command.
+    11/16/17; Fixed del command and added arguments for the command.
    
-    Fix del command and add arguments for it.
     Add edit command for .ATK and .POKE with args.
     
+    Add better memory management 
     Add profile saving so we don't have to type setpoke each time on startup.
     Fix errors
-    Print error correctly in game console and save crash files.
+    Print errors correctly in game console and save crash files.
     Implement battles. 
     Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:").
     Add multiplayer online battling, spectating, IVs/EV editing, graphics.
@@ -48,7 +49,7 @@ public class Game {
 
     public static final String GAME_NAME = "PokeSim";
     public static final String GAME_REL_VER = "Alpha";
-    public static final String GAME_VERSION = "0.33a";
+    public static final String GAME_VERSION = "0.34";
     
     private static String[] cmd;
 
@@ -60,6 +61,7 @@ public class Game {
 
     public static void init(String[] args){
         try{
+            long time = System.currentTimeMillis();
             fileManager = new FileManager();
             if(args.length == 0) text.print("No arguments recieved.");
             text.seperator();
@@ -79,6 +81,8 @@ public class Game {
             }else{
                 text.print(fileManager.getAttackCount() + " attack(s) initialized.");
             }
+            long timeTaken = System.currentTimeMillis() - time;
+            text.print("Loaded files in " + String.valueOf(timeTaken) + "ms.");
             text.seperator();
             text.print("Please enter a name for your profile: ");
             String inp = text.getStringInput("> ");
@@ -150,9 +154,12 @@ public class Game {
                 text.blank();
             }
 
-            //Description: Displays the user's profile name.
+            //Description: Displays the user's profile.
             else if(input.equalsIgnoreCase("profile")){
-                text.print("Your profile name is \"" + name + "\" ");
+                text.clearScreen();
+                text.print("Profile name: " + name);
+                text.print("Java: Java v" + System.getProperty("java.version") + " by " + System.getProperty("java.vendor"));
+                text.print("OS: " + System.getProperty("os.arch") + " " + System.getProperty("os.name") + " " + System.getProperty("os.version"));
                 text.blank();
             }
         }
@@ -287,23 +294,27 @@ public class Game {
                 
             
             //Description: Delete a file.
-            } else if(input.equalsIgnoreCase("del")){
-                listPokemon();
-                listAttacks();
-                boolean found = false;
-                String delete = text.getStringInput("Which file to delete?: ");
-                for(File file : fileManager.gameDirectory.listFiles()){
-                    String name = file.getName();
-                    //TODO: Fix.
-                    if(name.equalsIgnoreCase(delete)){
-                        found = true;
-                        text.print("Deleting file " + delete + ".");
-                        fileManager.deleteFile(file);
-                    }
-                }
-                if(found == false){
-                    text.print("File " + delete + " not found!");
-                }
+            } else if(Arrays.asList(a_Input).contains("del")){
+               if(a_Input.length != 2){
+                   text.print("Usage: del <file>");
+                   gameLoop(true);
+               }
+               String filename = a_Input[1];
+               if(fileManager.fileExists(filename)){
+                   try{
+                       if(fileManager.getFile(filename).delete()){
+                           text.print("Successfully deleted file " + filename + ".");
+                       }else{
+                           text.print("Unable to delete file " + filename + ".");
+                           text.print("This may be caused by Java being unable to delete files on your OS.");
+                       }
+                   }catch(SecurityException s){
+                       text.print("Java is blocked access from deleting files.");
+                   }
+                   
+               }else{
+                   text.print("File not found.");
+               }
 
             //Description: Prints all attacks.
             } else if(input.equalsIgnoreCase("attacks")){
