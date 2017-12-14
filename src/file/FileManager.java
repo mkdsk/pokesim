@@ -17,12 +17,37 @@ public class FileManager {
             gameDirectory.mkdirs();
         }
     }
+    
+    
+    public void tryLoadProfile(){
+        
+    }
+    
+    //returns true if a profile file doesn't exist 
+    public boolean firstStartup(){
+        //check if profile.txt exists
+        for(File file : this.gameDirectory.listFiles()){
+            //do stuff
+        }
+        return false;
+    }
 
     /* Returns a file based off it's name. Null if it doesn't exist.*/
     public File getFile(String filename){
         for(File file : this.gameDirectory.listFiles()){
             if(file.getName().equals(filename)){
                 return file;
+            }
+        }
+        return null;
+    }
+    
+    public File getAttackFileByName(String name){
+        for(File file : this.gameDirectory.listFiles()){
+            if(file.getName().endsWith(".atk")){
+                if(this.getAtkName(file).equals(name)){
+                    return file;
+                }
             }
         }
         return null;
@@ -83,7 +108,7 @@ public class FileManager {
     public int getPkmn() {
         int counter = 0;
         File[] list = gameDirectory.listFiles();
-        if (list != null) {
+        if (list != null && list.length > 0) {
             for (File file : list) {
                 String name = file.getName();
                 if (name.endsWith(".poke")) {
@@ -99,6 +124,11 @@ public class FileManager {
      */
     public boolean isValidFile(File file) {
         try{
+            int attacks = 0;
+            boolean atk1_E = false;
+            boolean atk2_E = false;
+            boolean atk3_E = false;
+            boolean atk4_E = false;
             //Once all these variables are true, we return true.
             boolean extcheck = false;
             boolean atkcheck = false;
@@ -197,6 +227,7 @@ public class FileManager {
                     String[] k = line.split(":");
                     if(this.atkExists(k[1])){
                         attackcheckone = true;
+                        attacks++;
                     }
 
                 }
@@ -205,6 +236,7 @@ public class FileManager {
                     String[] k = line.split(":");
                     if(this.atkExists(k[1])){
                         attackchecktwo = true;
+                        attacks++;
                     }
                 }
 
@@ -212,6 +244,7 @@ public class FileManager {
                     String[] k = line.split(":");
                     if(this.atkExists(k[1])){
                         attackcheckthree = true;
+                        attacks++;
                     }
                 }
 
@@ -219,6 +252,7 @@ public class FileManager {
                     String[] k = line.split(":");
                     if(this.atkExists(k[1])){
                         attackcheckfour = true;
+                        attacks++;
                     }
                 }
 
@@ -578,9 +612,6 @@ public class FileManager {
         return false;
     }
 
-    /*
-    Prints a Pokemon's info off of a file.
-     */
     public void printInfo(File file) {
         if(isValidFile(file)){
             String name = this.getName(file);
