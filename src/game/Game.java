@@ -17,17 +17,37 @@ import java.util.Arrays;
     11/13/17; Reworked battle logic a bit more, fixed random command throwing exception.
     11/15/17; Added open <file> command.
     11/16/17; Fixed del command and added arguments for the command.
-   
+    12/11/17; Fixed getPkmn() throwing error on first time startup.
+    12/12/17; Fixed battle sequence, added quit command
+    12/13/17; Added ASCII engine, tour command, battle delays
+    
     Add edit command for .ATK and .POKE with args.
     
-    Add better memory management 
     Add profile saving so we don't have to type setpoke each time on startup.
-    Fix errors
-    Print errors correctly in game console and save crash files.
-    Implement battles. 
-    Add stat modifying moves to the game (If it lowers/raises a stat, a "true" will be placed under the field "modify:").
-    Add multiplayer online battling, spectating, IVs/EV editing, graphics.
- */
+    Add trainer files with sets of Pokemon files they use.
+    When aginst trainer, make the battle end when a FULL PARTY is dead, not when one dies
+    Add the ability to switch out Pokemon
+    Add setpoke <pokemon> <slot> for MULTIPLE pokemon in parties (up to 6 at most)
+    Add command to create a new trainer
+    Add ability to switch out Pokemon whilst in battle
+    
+    *Trainers can be battled with start <trainer file>.trn, and the battle sequence will change from this
+    
+    Battle
+    ======
+    Add DMG over time moves, weather effect moves, status effects, stat lowering/raising. This should be marked by atktype in the file: physical/status/weather/time/stat.
+    Add better battle AI
+    Add natures, held items, bag items, abilities
+    Pokemon with less than 4 attacks but atleast one should be allowed to battle
+    Check for same name attacks and mark as invalid pokemon, it can break the battle code
+    Implement IVs/EVs?
+    
+    Add multiplayer commands and battles, and tournaments.
+    Add lobby chats with other players like in showdown.
+    Fix memory management
+    Add graphics
+    Add exe launcher file for the game
+*/
 
 public class Game {
 
@@ -42,6 +62,7 @@ public class Game {
     private static String[] battleCommands = {"random", "list", "back", "new", "edit", "start", "del"};
     private static String name = "Player";
     private static File party; // Player's party pokemon used in battle.
+    private static File profile;
 
     // Determine the course of the program
     private static boolean inBattleMenu = false;
@@ -49,7 +70,7 @@ public class Game {
 
     public static final String GAME_NAME = "PokeSim";
     public static final String GAME_REL_VER = "Alpha";
-    public static final String GAME_VERSION = "0.34";
+    public static final String GAME_VERSION = "0.37";
     
     private static String[] cmd;
 
@@ -62,6 +83,8 @@ public class Game {
     public static void init(String[] args){
         try{
             long time = System.currentTimeMillis();
+            for(int i = 0; i < 100; i++){ text.blank(); }
+            text.drawASCII("PokeSim", 10);
             fileManager = new FileManager();
             if(args.length == 0) text.print("No arguments recieved.");
             text.seperator();
@@ -82,21 +105,22 @@ public class Game {
                 text.print(fileManager.getAttackCount() + " attack(s) initialized.");
             }
             long timeTaken = System.currentTimeMillis() - time;
-            text.print("Loaded files in " + String.valueOf(timeTaken) + "ms.");
+            text.print("Initialized in " + String.valueOf(timeTaken) + "ms.");
             text.seperator();
             text.print("Please enter a name for your profile: ");
             String inp = text.getStringInput("> ");
             if(inp.equals("")){
-                name = "debug";
+                name = "Player";
             }else{
                 name = inp;
             }
             text.print("Profile name set as \"" + name + "\"");
             text.blank();
             text.print("Write \"help\" for command info.");
+            text.print("You can also write \"quit\" at any time to quit the game.");
             gameLoop(false);
 
-        }catch (Exception e){
+        }catch (Exception e){ //whoops
             text.seperator();
             e.printStackTrace();
             text.seperator();
@@ -109,6 +133,10 @@ public class Game {
     /* All commands are dealt with within this function.
        Parameters: battle (Determines whether to restart the 
        loop in the battle menu or the regular menu.)
+       PokeSim's command line allows you to create custom
+       Pokemon and attacks, initiate battles, and initiate multiplayer battles
+       online. Editing of files within the command line is 
+       also planned. 
     */
     public static void gameLoop(boolean battle){
         if(battle){
@@ -120,11 +148,10 @@ public class Game {
         }
         while(inMenu){
             String input = text.getStringInput("MENU> ");
-            if(!Arrays.asList(validCommands).contains(input)){ // invalid command!
-            }
+            
 
             //Description: Enters the battle menu.
-            else if(input.equalsIgnoreCase("battle")){
+            if(input.equalsIgnoreCase("battle")){
                 text.print("Entering battle menu...");
                 inMenu = false;
                 inBattleMenu = true;
@@ -151,16 +178,52 @@ public class Game {
                 text.print("list - Prints all loaded Pokemon in memory.");
                 text.print("help - Display this menu.");
                 text.print("profile - Displays your profile info.");
+                text.print("tour - Gives you a tour of the game. Useful for new players.");
                 text.blank();
             }
 
+            //Description: Gives a tour of the game and how to use it.
+            else if(input.equalsIgnoreCase("tour")){
+                String decision = text.getStringInput("Take tour? (y/n): ");
+                if(decision != "y"){
+                    
+                }
+                
+                if(decision.equalsIgnoreCase("y")){
+                    text.blank();
+                    for(int i = 0; i < 150; i++){
+                        text.blank();
+                    }
+                    text.drawASCII("PokeSim", 10);
+                    System.out.println("===========================================");            
+                    text.print("PokeSim is a text based game inspired by other simulations of Pokemon battles such as ");
+                    text.print("Pokemon Showdown. This version attemps to recreate Showdown but with a much simper ");
+                    text.print("approach. Many more features are added, including but not limited to the creation of");
+                    text.print("custom Pokemon and attacks, profiles, and easily accessable databases of Pokemon stored in ");
+                    text.print("the directory for the game. ");
+                    text.seperateText("Getting Started");
+                    text.print("Assuming you have the first-gen pack installed in C://PokeSim, you can setup a party by doing");
+                    text.print("        \"setpoke <file>.poke\"");
+                    text.print("And then battle a Pokemon by simply writing");
+                    text.print("        \"start <file>.poke\"");
+                    text.print("Other useful commands can be found by typing \"help\" on the command line.");
+                    text.blank();
+                }
+            }
+            
             //Description: Displays the user's profile.
             else if(input.equalsIgnoreCase("profile")){
-                text.clearScreen();
                 text.print("Profile name: " + name);
                 text.print("Java: Java v" + System.getProperty("java.version") + " by " + System.getProperty("java.vendor"));
                 text.print("OS: " + System.getProperty("os.arch") + " " + System.getProperty("os.name") + " " + System.getProperty("os.version"));
+                
                 text.blank();
+            }
+            
+            
+            else if(input.equalsIgnoreCase("quit")){
+                text.print("Quitting game...");
+                System.exit(0);
             }
         }
 
@@ -454,6 +517,9 @@ public class Game {
                 }else{
                     text.print("File not found.");
                 }
+            }else if(input.equalsIgnoreCase("quit")){
+                text.print("Quitting game...");
+                System.exit(0);
             }
         }
     }
@@ -478,6 +544,15 @@ public class Game {
             if(file.getName().endsWith(".atk")){
                 fileManager.printAttack(file);
             }
+        }
+    }
+    
+    
+    public static void wait(int seconds){
+        try{
+            Thread.sleep(seconds*1000);
+        }catch(InterruptedException e){
+            text.print("Interrupted!!!");
         }
     }
 
