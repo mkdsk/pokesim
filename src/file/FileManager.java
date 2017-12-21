@@ -1,7 +1,3 @@
-package file;
-
-import game.Game;
-
 import java.io.*;
 import java.util.Arrays;
 import java.util.Random;
@@ -37,6 +33,17 @@ public class FileManager {
         for(File file : this.gameDirectory.listFiles()){
             if(file.getName().equals(filename)){
                 return file;
+            }
+        }
+        return null;
+    }
+    
+    public File getPkmnFileByName(String name){
+        for(File file : this.gameDirectory.listFiles()){
+            if(file.getName().endsWith(".poke")){
+                if(this.getName(file).equals(name)){
+                    return file;
+                }
             }
         }
         return null;
@@ -118,12 +125,14 @@ public class FileManager {
         }
         return counter;
     }
-
+    
     /*
     Finds out if a .poke contains valid syntax.
      */
     public boolean isValidFile(File file) {
         try{
+            if(file == null) return false;
+            if(file.getName().endsWith(".trn")) return true;
             int attacks = 0;
             boolean atk1_E = false;
             boolean atk2_E = false;
@@ -639,6 +648,7 @@ public class FileManager {
         }
     }
 
+    //write an attack file with parameters to the game directory. 
     public void writeAttackFile(String filename, String name, String type, int power, int accuracy){
         try{
             File f = new File("C:" + File.separator + "PokeSim" + File.separator + filename);
@@ -656,6 +666,7 @@ public class FileManager {
         }
     }
 
+    //write a pokemon file with the parameters to the game directory.
     public void writePokemonFile(String filename, String name, int atk, int def, int spd, String type, String hp, String attack_one, String attack_two, String attack_three, String attack_four){
         try{
             File f = new File("C:" + File.separator + "PokeSim" + File.separator + filename);
@@ -695,7 +706,251 @@ public class FileManager {
             Game.getTextHelper().error("Error: " + e.getMessage() + ".");
         }
     }
+    
+    public String getTrainerName(File trainer){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("name:")){
+                    String[] msg = line.split(":");
+                    return msg[1];
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+    public String getTrainerPrefix(File trainer){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("prefix:")){
+                    String[] msg = line.split(":");
+                    return msg[1];
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+    public String getWinningMsg(File trainer){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("winningMsg:")){
+                    String[] msg = line.split(":");
+                    return msg[1];
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+    public String getLosingMsg(File trainer){
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("losingMsg:")){
+                    String[] msg = line.split(":");
+                    return msg[1];
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+    //returns null if the file isnt valid
+    public String getSlotOnePkmn(File trainer){
+        //get name of slot 
+        //get file then return
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("slot1:")){
+                    String[] slot = line.split(":");
+                    if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
+                        return "";
+                    }else{
+                        return slot[1];
+                    }
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+    public String getSlotTwoPkmn(File trainer){
+        //get name of slot 
+        //get file then return
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("slot2:")){
+                    String[] slot = line.split(":");
+                    if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
+                        return "";
+                    }else{
+                        return slot[1];
+                    }
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+    public String getSlotThreePkmn(File trainer){
+        //get name of slot 
+        //get file then return
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("slot3:")){
+                    String[] slot = line.split(":");
+                    if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
+                        return "";
+                    }else{
+                        return slot[1];
+                    }
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+   public String getSlotFourPkmn(File trainer){
+        //get name of slot 
+        //get file then return
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("slot4:")){
+                    String[] slot = line.split(":");
+                    if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
+                        return "";
+                    }else{
+                        return slot[1];
+                    }
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+    public String getSlotFivePkmn(File trainer){
+        //get name of slot 
+        //get file then return
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("slot5:")){
+                    String[] slot = line.split(":");
+                    if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
+                        return "";
+                    }else{
+                        return slot[1];
+                    }
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+    public String getSlotSixPkmn(File trainer){
+        //get name of slot 
+        //get file then return
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader(trainer));
+            String line;
+            while((line = reader.readLine()) != null){
+                if(line.startsWith("slot6:")){
+                    String[] slot = line.split(":");
+                    if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
+                        return "";
+                    }else{
+                        return slot[1];
+                    }
+                }
+            }
+        }catch(Exception e){
+            
+        }
+        return null;
+    }
+    
+    public boolean isValidTrainer(File file){
+        boolean namecheck = false;
+        boolean prefixcheck = false;
+        boolean winningmsgc = false;
+        boolean losingmsgc = false;
+        boolean extcheck = false; //file extension = .trn
+        
+        try{
+            //get the attributes and check them
+            String name = this.getTrainerName(file);
+            String prefix = this.getTrainerPrefix(file);
+            String winningMsg = this.getWinningMsg(file);
+            String losingMsg = this.getLosingMsg(file);
+            //check the name, prefix, losing/winning msgs, and if the pokemon files are valid.
+            if(name != null && !(name.length() < 3) && !(name.length() > 20)){
+                namecheck = true;
+            }
+            if(prefix != null && !(prefix.length() < 3) && !(prefix.length() > 15)){
+                prefixcheck = true; 
+            }
+            if(winningMsg != null  && !(winningMsg.length() < 3) && !(winningMsg.length() > 50)){
+                winningmsgc = true;
+            }
+            if(losingMsg != null && !(losingMsg.length() < 3) && !(losingMsg.length() > 50)){
+                losingmsgc = true;
+            }
+           
+            if(file.getName().endsWith(".trn")) extcheck = true;
+            
+            if(extcheck && namecheck && prefixcheck && winningmsgc && losingmsgc){
+                return true;
+            }
+            
+            
+        }catch(Exception e){
+            Game.getTextHelper().print("An error occurred while validating a trainer file.:");
+            Game.getTextHelper().print("Extension?: " + String.valueOf(extcheck));
+            Game.getTextHelper().print("Prefix?: " + String.valueOf(prefixcheck));
+            Game.getTextHelper().print("Win Msg?: " + String.valueOf(winningmsgc));
+            Game.getTextHelper().print("Lose Msg?: " + String.valueOf(losingmsgc));
+            Game.getTextHelper().print("Name?: " + String.valueOf(namecheck));
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     
 }
 
+//fix memory issues...
