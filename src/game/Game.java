@@ -21,6 +21,7 @@ import java.net.UnknownHostException;
     
     Add edit command for .ATK and .POKE with args.
     
+    Finish trainer battles
     Fix NullPointerException when typing in a invalid file: "start bob.tr"
     Add trainerlist command
     Add profile saving so we don't have to type setpoke each time on startup.
@@ -111,11 +112,12 @@ public class Game {
             }
             text.print("Profile name set as \"" + name + "\"");
             text.blank();
+            text.print("Total of " + fileManager.getTotalFileCount() + " files loaded (" + fileManager.getPkmn() + " poke, " + fileManager.getTrainerCnt() + " trn, " + fileManager.getAttackCount() + " atk)");
             text.print("Write \"help\" for command info.");
             text.print("You can also write \"quit\" at any time to quit the game.");
             gameLoop(false);
 
-        }catch (Exception e){ //whoops
+        }catch (Exception e){ 
             text.seperator();
             e.printStackTrace();
             text.seperator();
@@ -344,7 +346,7 @@ public class Game {
                     text.print("Usage: start <file>");
                     gameLoop(true);
                 }
-                if(fileManager.fileExists(a_Input[1]) && fileManager.getFile(a_Input[1]).getName().endsWith(".poke") || fileManager.getFile(a_Input[1]).getName().endsWith(".trn")){
+                if(fileManager.fileExists(a_Input[1]) && (fileManager.getFile(a_Input[1]).getName().endsWith(".poke") || fileManager.getFile(a_Input[1]).getName().endsWith(".trn"))){
                     battler.battle(fileManager.getFile(a_Input[1])); //null pointer wtf ? 
                 }else{
                     text.print("File not found or file is not a POKE/TRN file.");
