@@ -19,6 +19,57 @@ public class Battler {
     //player input variables
     private String decision; //fight or run
     private String atk; // the attack the player uses on each turn
+    private int timesCycled = 0;
+    
+    /* TRAINER BATTLE VARIABLES */ 
+    /* TRAINER PKMN FILES */ 
+    private File e_PKMN6_f;
+    private File e_PKMN5_f;
+    private File e_PKMN4_f;
+    private File e_PKMN3_f;
+    private File e_PKMN2_f;
+    private File e_PKMN1_f;
+    
+    private ArrayList<File> trainerParty; //Initialized on trainer battle
+    
+    /* TRAINER PKMN STATS VARIABLES*/ 
+    //THESE VARIABLES ARE CHANGED EACH TIME A NEW TRAINER POKEMON ENTERS A BATTLE. 
+    private String t_Name; 
+    private int t_Atk; 
+    private int t_Def;
+    private int t_Spd;
+    private String t_Type;
+    private long t_Hp;
+    
+    private File t_Atk1_f;
+    private File t_Atk2_f;
+    private File t_Atk3_f;
+    private File t_Atk4_f;
+    private String t_Atk_1;
+    private String t_Atk_2;
+    private String t_Atk_3;
+    private String t_Atk_4; 
+    
+    /* MOVE STATS VARIABLES */ 
+    private String t_Atk1_NAME; //NAME
+    private String t_Atk1_TYPE; //TYPE
+    private int t_Atk1_POWER; //POWER (DAMAGE)
+    private int t_Atk1_ACC; //ACCURACY (1-100%%)
+    
+    private String t_Atk2_NAME;
+    private String t_Atk2_TYPE;
+    private int t_Atk2_POWER;
+    private int t_Atk2_ACC;
+    
+    private String t_Atk3_NAME;
+    private String t_Atk3_TYPE;
+    private int t_Atk3_POWER;
+    private int t_Atk3_ACC;
+    
+    private String t_Atk4_NAME;
+    private String t_Atk4_TYPE;
+    private int t_Atk4_POWER;
+    private int t_Atk4_ACC;
 
     public Battler(){
         AttackRnd = new Random();
@@ -212,15 +263,14 @@ public class Battler {
                 //now we have the correct attack choice. 
                 if(atk.equalsIgnoreCase("back")){
                     atkMenu = false;
-                    fightMenu = true;
+                    fightMenu = true; //ADD THIS BELOW!!!
+					Game.getTextHelper().print("You forfeited the battle!");
+                    return;
                 }
                 //its a valid attack so now we get the info about this attack, execute it, then return back to fight menu.
                 //check who goes first on the turn using speed stat, the AI or the player.
                 //after each attack ends, check each pokemon's hp
-                if(p_Spd > e_Spd){
-                    //do nothing, the program will skip below and execute player's move.
-                }
-                else if(e_Spd > p_Spd){ //AI's turn
+                if(e_Spd > p_Spd || e_Spd == p_Spd &&){ //AI's turn
                     //randomize move
                     //after move is done check if player hp is 0 or below then stop battle
                     int index = AttackRnd.nextInt(Ai_Attacks.size());
@@ -375,12 +425,13 @@ public class Battler {
 
     public void execTrainerBattle(File enemy){
         //valid+blankc=6 && invalidpkmn=0
+        boolean validTrainer=false;
         int invalidPkmn = 0;
         int validPkmn = 0;
         int blankc = 0;
         File player = Game.getPartyPokemon();
         
-        String trainerName = Game.getFileManager().getTrainerPrefix + " " + Game.getFileManager().getTrainerName();
+        String trainerName = Game.getFileManager().getTrainerPrefix(enemy) + " " + Game.getFileManager().getTrainerName(enemy);
         
         //initialize arraylist here
         //check if is not empty and valid then add to array list.
@@ -391,7 +442,48 @@ public class Battler {
         String pkmn4 = Game.getFileManager().getSlotFourPkmn( enemy );
         String pkmn5 = Game.getFileManager().getSlotFivePkmn( enemy );
         String pkmn6 = Game.getFileManager().getSlotSixPkmn( enemy );
+        /*
+         * CHECK IF TRAINER AND EVERY ONE OF ITS POKEMON ARE VALID. (ATTACKS ARE VALID IS PKMN IS VALID)
+         */
+        //blankc+validpkmn = 6 = total valid ().
+        if(pkmn1.isEmpty()){ blankc++; }
+        if(pkmn2.isEmpty()){ blankc++; }
+        if(pkmn3.isEmpty()){ blankc++; }
+        if(pkmn4.isEmpty()){ blankc++; }
+        if(pkmn5.isEmpty()){ blankc++; }
+        if(pkmn6.isEmpty()){ blankc++; }
 
+        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn1))){
+            validPkmn++;
+        }else{ invalidPkmn++; }
+        
+        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn2))){
+            validPkmn++;
+        }else{ invalidPkmn++; }
+        
+        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn3))){
+            validPkmn++;
+        }else{ invalidPkmn++; }
+        
+        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn4))){
+            validPkmn++;
+        }else{ invalidPkmn++; }
+        
+        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn5))){
+            validPkmn++;
+        }else{ invalidPkmn++; }
+        
+        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn6))){
+            validPkmn++;
+        }else{ invalidPkmn++; }
+        
+        if(blankc+validPkmn == 6 && validPkmn > 0){
+            validTrainer = true;
+        }else{
+            Game.getTextHelper().print("Trainer contains one or more invalid Pokemon files.");
+            Game.gameLoop(true);
+        }
+        
         String p_Name = Game.getFileManager().getName(player);
         int p_Atk = Game.getFileManager().getAtk(player);
         int p_Def = Game.getFileManager().getDef(player);
@@ -403,7 +495,7 @@ public class Battler {
         String p_Atk_3 = Game.getFileManager().getAttackSlotThree(player);
         String p_Atk_4 = Game.getFileManager().getAttackSlotFour(player);
 
-        File p_atk1f = Game.getFileManager().getAttackFileByName( p_Atk_1);
+        File p_atk1f = Game.getFileManager().getAttackFileByName(p_Atk_1);
         File p_atk2f = Game.getFileManager().getAttackFileByName(p_Atk_2);
         File p_atk3f = Game.getFileManager().getAttackFileByName(p_Atk_3);
         File p_atk4f = Game.getFileManager().getAttackFileByName(p_Atk_4);
@@ -433,85 +525,83 @@ public class Battler {
         //cycle to next item in list when a pokemon faints
         //if list is empty then end battle
         
-        File e_PKMN1_f = Game.getFileManager().getPkmnFileByName(pkmn1);
-        File e_PKMN2_f = Game.getFileManager().getPkmnFileByName(pkmn2);
-        File e_PKMN3_f = Game.getFileManager().getPkmnFileByName(pkmn3);
-        File e_PKMN4_f = Game.getFileManager().getPkmnFileByName(pkmn4);
-        File e_PKMN5_f = Game.getFileManager().getPkmnFileByName(pkmn5);
-        File e_PKMN6_f = Game.getFileManager().getPkmnFileByName(pkmn6);
+        e_PKMN1_f = Game.getFileManager().getPkmnFileByName(pkmn1);
+        e_PKMN2_f = Game.getFileManager().getPkmnFileByName(pkmn2);
+        e_PKMN3_f = Game.getFileManager().getPkmnFileByName(pkmn3);
+        e_PKMN4_f = Game.getFileManager().getPkmnFileByName(pkmn4);
+        e_PKMN5_f = Game.getFileManager().getPkmnFileByName(pkmn5);
+        e_PKMN6_f = Game.getFileManager().getPkmnFileByName(pkmn6);
         
         //cycle to next item in list when a pokemon faints
         //if list is empty then end battle
-        ArrayList<File> trainerParty = new ArrayList<>();
-        trainerParty.add(e_PKMN1_f);
-        trainerParty.add(e_PKMN2_f);
-        trainerParty.add(e_PKMN3_f);
-        trainerParty.add(e_PKMN4_f);
-        trainerParty.add(e_PKMN5_f);
-        trainerParty.add(e_PKMN6_f);
+        trainerParty = new ArrayList<>();
+        if(!pkmn1.isEmpty()){ trainerParty.add(e_PKMN1_f); }
+        if(!pkmn2.isEmpty()){ trainerParty.add(e_PKMN2_f); }
+        if(!pkmn3.isEmpty()){ trainerParty.add(e_PKMN3_f); }
+        if(!pkmn4.isEmpty()){ trainerParty.add(e_PKMN4_f); }
+        if(!pkmn5.isEmpty()){ trainerParty.add(e_PKMN5_f); }
+        if(!pkmn6.isEmpty()){ trainerParty.add(e_PKMN6_f); }
+                
+        // INITIALIZE VARIABLES FOR THE FIRST PKMN.
+        t_Name = Game.getFileManager().getName(trainerParty.get(timesCycled));
+        t_Atk = Game.getFileManager().getAtk(trainerParty.get(timesCycled));
+        t_Def = Game.getFileManager().getDef(trainerParty.get(timesCycled));
+        t_Spd = Game.getFileManager().getSpd(trainerParty.get(timesCycled));
+        t_Type = Game.getFileManager().getType(trainerParty.get(timesCycled));
+        t_Hp = Game.getFileManager().getHP(trainerParty.get(timesCycled));
+        t_Atk_1 = Game.getFileManager().getAttackSlotOne(trainerParty.get(timesCycled));
+        t_Atk_2 = Game.getFileManager().getAttackSlotTwo(trainerParty.get(timesCycled));
+        t_Atk_3 = Game.getFileManager().getAttackSlotThree(trainerParty.get(timesCycled));
+        t_Atk_4 = Game.getFileManager().getAttackSlotFour(trainerParty.get(timesCycled));
         
-        int timesCycled = 0; // incremented each time the below code is called
+        t_Atk1_f = Game.getFileManager().getAttackFileByName(t_Atk_1);
+        t_Atk2_f = Game.getFileManager().getAttackFileByName(t_Atk_2);
+        t_Atk3_f = Game.getFileManager().getAttackFileByName(t_Atk_3);
+        t_Atk4_f = Game.getFileManager().getAttackFileByName(t_Atk_4);
         
-        //These will be changed each time trainer's Pokemon faints.
-        String e_Name = Game.getFileManager().getName(trainerParty.get(timesCycled));
-        int e_Atk = Game.getFileManager().getAtk(trainerParty.get(timesCycled));
-        int e_Def = Game.getFileManager().getDef(trainerParty.get(timesCycled));
-        int e_Spd = Game.getFileManager().getSpd(trainerParty.get(timesCycled));
-        String e_Type = Game.getFileManager().getType(trainerParty.get(timesCycled));
-        long e_Hp = Game.getFileManager().getHP(trainerParty.get(timesCycled));
-        String e_Atk_1 = Game.getFileManager().getAttackSlotOne(trainerParty.get(timesCycled));
-        String e_Atk_2 = Game.getFileManager().getAttackSlotTwo(trainerParty.get(timesCycled));
-        String e_Atk_3 = Game.getFileManager().getAttackSlotThree(trainerParty.get(timesCycled));
-        String e_Atk_4 = Game.getFileManager().getAttackSlotFour(trainerParty.get(timesCycled));
-
-        File e_atk1f = Game.getFileManager().getAttackFileByName(e_Atk_1);
-        File e_atk2f = Game.getFileManager().getAttackFileByName(e_Atk_2);
-        File e_atk3f = Game.getFileManager().getAttackFileByName(e_Atk_3);
-        File e_atk4f = Game.getFileManager().getAttackFileByName(e_Atk_4);
-
-        String e_atk1_NAME = Game.getFileManager().getAtkName(e_atk1f);
-        String e_atk1_TYPE = Game.getFileManager().getAtkType(e_atk1f);
-        int e_atk1_POWER = Game.getFileManager().getPower(e_atk1f);
-        int e_atk1_ACC = Game.getFileManager().getAccuracy(e_atk1f);
-
-        String e_atk2_NAME = Game.getFileManager().getAtkName(e_atk2f);
-        String e_atk2_TYPE = Game.getFileManager().getAtkType(e_atk2f);
-        int e_atk2_POWER = Game.getFileManager().getPower(e_atk2f);
-        int e_atk2_ACC = Game.getFileManager().getAccuracy(e_atk2f);
-
-        String e_atk3_NAME = Game.getFileManager().getAtkName(e_atk3f);
-        String e_atk3_TYPE = Game.getFileManager().getAtkType(e_atk3f);
-        int e_atk3_POWER = Game.getFileManager().getPower(e_atk3f);
-        int e_atk3_ACC = Game.getFileManager().getAccuracy(e_atk3f);
-
-        String e_atk4_NAME = Game.getFileManager().getAtkName(e_atk4f);
-        String e_atk4_TYPE = Game.getFileManager().getAtkType(e_atk4f);
-        int e_atk4_POWER = Game.getFileManager().getPower(e_atk4f);
-        int e_atk4_ACC = Game.getFileManager().getAccuracy(e_atk4f);
+        //name, type, power, acc
+        t_Atk1_NAME = Game.getFileManager().getAtkName(t_Atk1_f);
+        t_Atk1_TYPE = Game.getFileManager().getAtkType(t_Atk1_f);
+        t_Atk1_POWER = Game.getFileManager().getPower(t_Atk1_f);
+        t_Atk1_ACC = Game.getFileManager().getAccuracy(t_Atk1_f);
         
-        Game.getTextHelper().print("Successfully loaded enemy trainer and its data into battle sequence.");
-        Game.getTextHelper().blank();
-        Game.getTextHelper().print(trainerName + " challenges you to a battle!");
-        Game.getTextHelper("Go, " + p_Name + "!");
-        Game.getTextHelper().print(trainerName + " sends out " + e_Name + "!");
+        t_Atk2_NAME = Game.getFileManager().getAtkName(t_Atk2_f);
+        t_Atk2_TYPE = Game.getFileManager().getAtkType(t_Atk2_f);
+        t_Atk2_POWER = Game.getFileManager().getPower(t_Atk2_f);
+        t_Atk2_ACC = Game.getFileManager().getAccuracy(t_Atk2_f);
         
-        trainerBattleL = true;
-        atkMenuTrn = true;
-        while(trainerBattleL){
-            while(atkMenuTrn){
-                decision = Game.getTextHelper().getStringInput("FIGHT or RUN?: ");
-            {
-        }
-
+        t_Atk3_NAME = Game.getFileManager().getAtkName(t_Atk3_f);
+        t_Atk3_TYPE = Game.getFileManager().getAtkType(t_Atk3_f);
+        t_Atk3_POWER = Game.getFileManager().getPower(t_Atk3_f);
+        t_Atk3_ACC = Game.getFileManager().getAccuracy(t_Atk3_f);
+        
+        t_Atk4_NAME = Game.getFileManager().getAtkName(t_Atk4_f);
+        t_Atk4_TYPE = Game.getFileManager().getAtkType(t_Atk4_f);
+        t_Atk4_POWER = Game.getFileManager().getPower(t_Atk4_f);
+        t_Atk4_ACC = Game.getFileManager().getAccuracy(t_Atk4_f);
+        
+        
+        
     }
-
+    
+    //use timesCycled and the public trainerparty arraylist to get the stats of the NEXT pokemon (++)
+    public void resetTrainerVariables(){
+        //called when a trainer's pkmn faints. 
+        timesCycled++;
+        if(timesCycled > trainerParty.size()){
+            //end battle, player wins.
+        }
+        
+    }
+    
+    
     /* Types of moves: Damage over time, damage, stat raising/lowering, weather, status effects */
 
     /* Calculate damage if the move is an attacking type of move. */
     // Then round up to a round number
     public long calcDmg(File attackingPkmn, File enemyPkmn, String move){
         //first get the stats of the move
-        return 1; //placeholder
+        return Game.getFileManager().getPower(Game.getFileManager().getAttackFileByName(move));
     }
 
     //Sets the enemy pokemon data variables to the next available pokemon.
