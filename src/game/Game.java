@@ -66,7 +66,7 @@ public class Game {
 
     public static final String GAME_NAME = "PokeSim";
     public static final String GAME_REL_VER = "Alpha";
-    public static final String GAME_VERSION = "0.37";
+    public static final String GAME_VERSION = "0.40";
     
     private static String[] cmd;
 
