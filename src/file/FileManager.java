@@ -14,6 +14,28 @@ public class FileManager {
         }
     }
     
+    public int getTotalFileCount(){
+        int k = 0;
+        String name;
+        for(File file : this.gameDirectory.listFiles()){
+            name = file.getName();
+            if(name.endsWith(".trn") || name.endsWith(".atk") || name.endsWith(".poke")){
+                k++;
+            }
+            
+        }
+        return k; 
+    }
+    
+    public int getTrainerCnt(){
+        int k = 0;
+        for(File file : this.gameDirectory.listFiles()){
+            if (file.getName().endsWith(".trn")){
+                k++;
+            }
+        }
+        return k;
+    }
     
     public void tryLoadProfile(){
         
