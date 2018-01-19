@@ -1,0 +1,3 @@
+@echo off
+echo Compiling...
+bat2exeIEXP.bat start.bat PokeSim.exe
