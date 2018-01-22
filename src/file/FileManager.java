@@ -803,6 +803,9 @@ public class FileManager {
             while((line = reader.readLine()) != null){
                 if(line.startsWith("slot1:")){
                     String[] slot = line.split(":");
+                    if(slot.length == 1){
+                        return "";
+                    }
                     if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
                         return "";
                     }else{
@@ -825,6 +828,9 @@ public class FileManager {
             while((line = reader.readLine()) != null){
                 if(line.startsWith("slot2:")){
                     String[] slot = line.split(":");
+                    if(slot.length == 1){
+                        return "";
+                    }
                     if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
                         return "";
                     }else{
@@ -847,6 +853,9 @@ public class FileManager {
             while((line = reader.readLine()) != null){
                 if(line.startsWith("slot3:")){
                     String[] slot = line.split(":");
+                    if(slot.length == 1){
+                        return "";
+                    }
                     if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
                         return "";
                     }else{
@@ -869,6 +878,9 @@ public class FileManager {
             while((line = reader.readLine()) != null){
                 if(line.startsWith("slot4:")){
                     String[] slot = line.split(":");
+                    if(slot.length == 1){
+                        return "";
+                    }
                     if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
                         return "";
                     }else{
@@ -891,6 +903,9 @@ public class FileManager {
             while((line = reader.readLine()) != null){
                 if(line.startsWith("slot5:")){
                     String[] slot = line.split(":");
+                    if(slot.length == 1){
+                        return "";
+                    }
                     if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
                         return "";
                     }else{
@@ -913,6 +928,9 @@ public class FileManager {
             while((line = reader.readLine()) != null){
                 if(line.startsWith("slot6:")){
                     String[] slot = line.split(":");
+                    if(slot.length == 1){
+                        return "";
+                    }
                     if(slot[1] == null || slot[1].isEmpty() || slot[1].equals("")){
                         return "";
                     }else{
@@ -974,5 +992,3 @@ public class FileManager {
 
     
 }
-
-//fix memory issues...
