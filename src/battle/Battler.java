@@ -13,6 +13,10 @@ public class Battler {
     private boolean atkMenu;
     private boolean atkMenuTrn = false;
     private boolean trainerBattleL = false;
+    
+    private boolean e_DEAD = false;
+    private boolean p_DEAD = false;
+    private boolean b_TIE = false;
 
     private boolean trainerBattle;
 
@@ -240,7 +244,7 @@ public class Battler {
                 }
                 //now we have the decision.
                 if(decision.equalsIgnoreCase("run")){
-                    Game.getTextHelper().print("Successfully ran away from battle.");
+                    Game.getTextHelper().print("You forfeited the battle!");
                     fightMenu = false;
                     battling = false;
                 }
@@ -252,6 +256,24 @@ public class Battler {
 
             //Attack menu: Choose which attack to use, then execute it. Accept "back" as well.
             while(atkMenu){
+                //Do a first time check here every time.
+                if(p_Hp < 1){
+                    battling = false;
+                    atkMenu = false;
+                    Game.getTextHelper().print(p_Name + " fainted!");
+                    Game.getTextHelper().print("You lose!");
+                    Game.gameLoop(true);
+                    return;
+                }
+                else if (e_Hp < 1){
+                    battling = false;
+                    atkMenu = false;
+                    Game.getTextHelper().print(e_Name + " fainted!");
+                    Game.getTextHelper().print("You win!");
+                    Game.gameLoop(true);
+                    return;
+                }
+                
                 Game.getTextHelper().print("Write a move's name to use it or type \"back\" to return back to the FIGHT/RUN menu.");
                 Game.getTextHelper().print(p_Name + "'s HP: " + p_Hp);
                 Game.getTextHelper().print(e_Name + "'s HP: " + e_Hp);
@@ -263,14 +285,13 @@ public class Battler {
                 //now we have the correct attack choice. 
                 if(atk.equalsIgnoreCase("back")){
                     atkMenu = false;
-                    fightMenu = true; //ADD THIS BELOW!!!
-					Game.getTextHelper().print("You forfeited the battle!");
-                    return;
+                    fightMenu = true; 
                 }
                 //its a valid attack so now we get the info about this attack, execute it, then return back to fight menu.
                 //check who goes first on the turn using speed stat, the AI or the player.
                 //after each attack ends, check each pokemon's hp
-                if(e_Spd > p_Spd || e_Spd == p_Spd &&){ //AI's turn
+                if((e_Spd > p_Spd || e_Spd == p_Spd) && !fightMenu){ //AI's turn
+                    
                     //randomize move
                     //after move is done check if player hp is 0 or below then stop battle
                     int index = AttackRnd.nextInt(Ai_Attacks.size());
@@ -283,7 +304,11 @@ public class Battler {
                         //check for type effectiveness
                         Game.getTextHelper().print(e_Name + " uses " + e_atk1_NAME + "!");
                         Game.wait(1);
-                        Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        if(dmg < 1 || dmg == 0){
+                            Game.getTextHelper().print(e_Name + "'s move doesn't affect the opposing Pokemon!");
+                        }else{
+                            Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        }
                         Game.getTextHelper().print(e_Name + "'s " + e_atk1_NAME + " dealt " + dmg + " damage!");
                         Game.getTextHelper().blank();
                     }
@@ -293,7 +318,11 @@ public class Battler {
                         //check for type effectiveness 
                         Game.getTextHelper().print(e_Name + " uses " + e_atk2_NAME + "!");
                         Game.wait(1);
-                        Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        if(dmg < 1 || dmg == 0){
+                            Game.getTextHelper().print(e_Name + "'s move doesn't affect the opposing Pokemon!");
+                        }else{
+                            Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        }
                         Game.getTextHelper().print(e_Name + "'s " + e_atk2_NAME + " dealt " + dmg + " damage!");
                         Game.getTextHelper().blank();
                     }
@@ -303,7 +332,11 @@ public class Battler {
                         //check for type effectiveness 
                         Game.getTextHelper().print(e_Name + " uses " + e_atk3_NAME + "!");
                         Game.wait(1);
-                        Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        if(dmg < 1 || dmg == 0){
+                            Game.getTextHelper().print(e_Name + "'s move doesn't affect the opposing Pokemon!");
+                        }else{
+                            Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        }
                         Game.getTextHelper().print(e_Name + "'s " + e_atk3_NAME + " dealt " + dmg + " damage!");
                         Game.getTextHelper().blank();
                     }
@@ -313,20 +346,40 @@ public class Battler {
                         //check for type effectiveness 
                         Game.getTextHelper().print(e_Name + " uses " + e_atk4_NAME + "!");
                         Game.wait(1);
-                        Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        if(dmg < 1 || dmg == 0){
+                            Game.getTextHelper().print(e_Name + "'s move doesn't affect the opposing Pokemon!");
+                        }else{
+                            Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        }
                         Game.getTextHelper().print(e_Name + "'s " + e_atk4_NAME + " dealt " + dmg + " damage!");
                         Game.getTextHelper().blank();
                     }
                     //now check the hp of BOTH pokemon.
                     if(p_Hp < 1){
+                        p_DEAD = true;
                         battling = false;
                         atkMenu = false;
-                        Game.getTextHelper().print("You lose");
+                        if(e_Hp < 1){
+                            Game.getTextHelper().print(e_Name + " fainted!");
+                            Game.getTextHelper().print(p_Name + " fainted!");
+                            Game.getTextHelper().print("It's a tie!");
+                            Game.gameLoop(true);
+                            return;
+                        }else{
+                            Game.getTextHelper().print(p_Name + " fainted!");
+                            Game.getTextHelper().print("You lose!");
+                            Game.gameLoop(true);
+                            return;
+                        }
                     }
                     else if(e_Hp < 1){
+                        e_DEAD = true;
                         battling = false;
                         atkMenu = false;
-                        Game.getTextHelper().print("You win");
+                        Game.getTextHelper().print(e_Name + " fainted!");
+                        Game.getTextHelper().print("You win!");
+                        Game.gameLoop(true);
+                        return;
                     }
                 }
                 //calculate damage then check both pokemon hp
@@ -336,7 +389,11 @@ public class Battler {
                     //check for type effectiveness message
                     Game.getTextHelper().print(p_Name + " uses " + p_atk1_NAME + "!");
                     Game.wait(1);
-                    Game.getTextHelper().print("It's effective!");
+                    if(dmg < 1 || dmg == 0){
+                            Game.getTextHelper().print(p_Name + "'s move doesn't affect the opposing Pokemon!");
+                        }else{
+                            Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        }
                     Game.getTextHelper().print(p_Name + "'s " + p_atk1_NAME + " dealt " + dmg + " damage!");
                     Game.getTextHelper().blank();
                 }
@@ -346,7 +403,11 @@ public class Battler {
                     //check for type effectiveness message
                     Game.getTextHelper().print(p_Name + " uses " + p_atk2_NAME + "!");
                     Game.wait(1);
-                    Game.getTextHelper().print("It's effective!");
+                    if(dmg < 1 || dmg == 0){
+                            Game.getTextHelper().print(p_Name + "'s move doesn't affect the opposing Pokemon!");
+                        }else{
+                            Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        }
                     Game.getTextHelper().print(p_Name + "'s " + p_atk2_NAME + " dealt " + dmg + " damage!");
                     Game.getTextHelper().blank();
                 }
@@ -356,7 +417,11 @@ public class Battler {
                     //check for type effectiveness message
                     Game.getTextHelper().print(p_Name + " uses " + p_atk3_NAME + "!");
                     Game.wait(1);
-                    Game.getTextHelper().print("It's effective!");
+                    if(dmg < 1 || dmg == 0){
+                            Game.getTextHelper().print(p_Name + "'s move doesn't affect the opposing Pokemon!");
+                        }else{
+                            Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        }
                     Game.getTextHelper().print(p_Name + "'s " + p_atk3_NAME + " dealt " + dmg + " damage!");
                     Game.getTextHelper().blank();
                 }
@@ -366,16 +431,30 @@ public class Battler {
                     //check for type effectiveness message
                     Game.getTextHelper().print(p_Name + " uses " + p_atk4_NAME + "!");
                     Game.wait(1);
-                    Game.getTextHelper().print("It's effective!");
+                    if(dmg < 1 || dmg == 0){
+                            Game.getTextHelper().print(p_Name + "'s move doesn't affect the opposing Pokemon!");
+                        }else{
+                            Game.getTextHelper().print("It's effective!"); //placeholder for now
+                        }
                     Game.getTextHelper().print(p_Name + "'s " + p_atk4_NAME + " dealt " + dmg + " damage!");
                     Game.getTextHelper().blank();
                 }
                 //check hp
                 if(e_Hp < 1){
-                    Game.getTextHelper().print("You win");
+                    battling = false;
+                    atkMenu = false;
+                    Game.getTextHelper().print(e_Name + " fainted!");
+                    Game.getTextHelper().print("You win.");
+                    Game.gameLoop(true);
+                    return;
                 }
                 else if(p_Hp < 1){
-                    Game.getTextHelper().print("You lose");
+                    battling = false;
+                    atkMenu =false;
+                    Game.getTextHelper().print(p_Name + " fainted!");
+                    Game.getTextHelper().print("You lose.");
+                    Game.gameLoop(true);
+                    return;
                 }
 
                 if(p_Spd > e_Spd && atk != "back"){
@@ -405,6 +484,7 @@ public class Battler {
                         p_Hp = p_Hp - dmg;
                         Game.getTextHelper().print(e_Name + " uses " + e_atk3_NAME + "!");
                         Game.wait(1);
+                        
                         Game.getTextHelper().print("It's effective!"); //placeholder for now
                         Game.getTextHelper().print(e_Name + "'s " + e_atk3_NAME + " dealt " + dmg + " damage!");
                         Game.getTextHelper().blank();
@@ -453,29 +533,41 @@ public class Battler {
         if(pkmn5.isEmpty()){ blankc++; }
         if(pkmn6.isEmpty()){ blankc++; }
 
-        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn1))){
+        if(!pkmn1.isEmpty()){
+            if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn1))){
             validPkmn++;
-        }else{ invalidPkmn++; }
+            }else{ invalidPkmn++; }
+        }
+       
+        if(!pkmn2.isEmpty()){
+            if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn2))){
+            validPkmn++;
+            }else{ invalidPkmn++; }
+        }
         
-        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn2))){
+        if(!pkmn3.isEmpty()){
+            if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn3))){
             validPkmn++;
-        }else{ invalidPkmn++; }
+            }else{ invalidPkmn++; }
+        }
         
-        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn3))){
+        if(!pkmn4.isEmpty()){
+            if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn4))){
             validPkmn++;
-        }else{ invalidPkmn++; }
+            }else{ invalidPkmn++; }
+        }
         
-        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn4))){
+        if(!pkmn5.isEmpty()){
+            if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn5))){
             validPkmn++;
-        }else{ invalidPkmn++; }
+            }else{ invalidPkmn++; }
+        }
         
-        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn5))){
+        if(!pkmn6.isEmpty()){
+            if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn6))){
             validPkmn++;
-        }else{ invalidPkmn++; }
-        
-        if(Game.getFileManager().isValidFile(Game.getFileManager().getPkmnFileByName(pkmn6))){
-            validPkmn++;
-        }else{ invalidPkmn++; }
+            }else{ invalidPkmn++; }
+        }
         
         if(blankc+validPkmn == 6 && validPkmn > 0){
             validTrainer = true;
@@ -520,7 +612,7 @@ public class Battler {
         int p_atk4_POWER = Game.getFileManager().getPower(p_atk4f);
         int p_atk4_ACC = Game.getFileManager().getAccuracy(p_atk4f);
 
-        Game.getTextHelper().print("Successfully loaded party Pokemon #1 into battle sequence.");
+        Game.getTextHelper().print("Successfully loaded PLAYER party Pokemon #1 into battle sequence.");
         
         //cycle to next item in list when a pokemon faints
         //if list is empty then end battle
@@ -585,11 +677,51 @@ public class Battler {
     }
     
     //use timesCycled and the public trainerparty arraylist to get the stats of the NEXT pokemon (++)
-    public void resetTrainerVariables(){
+    //called when a trainer's pokemon faints.
+    public void resetTrainerVariables(String trainer){
         //called when a trainer's pkmn faints. 
         timesCycled++;
         if(timesCycled > trainerParty.size()){
             //end battle, player wins.
+        }else{
+            t_Name = Game.getFileManager().getName(trainerParty.get(timesCycled));
+            t_Atk = Game.getFileManager().getAtk(trainerParty.get(timesCycled));
+            t_Def = Game.getFileManager().getDef(trainerParty.get(timesCycled));
+            t_Spd = Game.getFileManager().getSpd(trainerParty.get(timesCycled));
+            t_Type = Game.getFileManager().getType(trainerParty.get(timesCycled));
+            t_Hp = Game.getFileManager().getHP(trainerParty.get(timesCycled));
+            t_Atk_1 = Game.getFileManager().getAttackSlotOne(trainerParty.get(timesCycled));
+            t_Atk_2 = Game.getFileManager().getAttackSlotTwo(trainerParty.get(timesCycled));
+            t_Atk_3 = Game.getFileManager().getAttackSlotThree(trainerParty.get(timesCycled));
+            t_Atk_4 = Game.getFileManager().getAttackSlotFour(trainerParty.get(timesCycled));
+        
+            t_Atk1_f = Game.getFileManager().getAttackFileByName(t_Atk_1);
+            t_Atk2_f = Game.getFileManager().getAttackFileByName(t_Atk_2);
+            t_Atk3_f = Game.getFileManager().getAttackFileByName(t_Atk_3);
+            t_Atk4_f = Game.getFileManager().getAttackFileByName(t_Atk_4);
+        
+            //name, type, power, acc
+            t_Atk1_NAME = Game.getFileManager().getAtkName(t_Atk1_f);
+            t_Atk1_TYPE = Game.getFileManager().getAtkType(t_Atk1_f);
+            t_Atk1_POWER = Game.getFileManager().getPower(t_Atk1_f);
+            t_Atk1_ACC = Game.getFileManager().getAccuracy(t_Atk1_f);
+        
+            t_Atk2_NAME = Game.getFileManager().getAtkName(t_Atk2_f);
+            t_Atk2_TYPE = Game.getFileManager().getAtkType(t_Atk2_f);
+            t_Atk2_POWER = Game.getFileManager().getPower(t_Atk2_f);
+            t_Atk2_ACC = Game.getFileManager().getAccuracy(t_Atk2_f);
+        
+            t_Atk3_NAME = Game.getFileManager().getAtkName(t_Atk3_f);
+            t_Atk3_TYPE = Game.getFileManager().getAtkType(t_Atk3_f);
+            t_Atk3_POWER = Game.getFileManager().getPower(t_Atk3_f);
+            t_Atk3_ACC = Game.getFileManager().getAccuracy(t_Atk3_f);
+        
+            t_Atk4_NAME = Game.getFileManager().getAtkName(t_Atk4_f);
+            t_Atk4_TYPE = Game.getFileManager().getAtkType(t_Atk4_f);
+            t_Atk4_POWER = Game.getFileManager().getPower(t_Atk4_f);
+            t_Atk4_ACC = Game.getFileManager().getAccuracy(t_Atk4_f);
+            
+            Game.getTextHelper().print(trainer + " sends out " + t_Name + "!");
         }
         
     }
@@ -601,13 +733,67 @@ public class Battler {
     // Then round up to a round number
     public long calcDmg(File attackingPkmn, File enemyPkmn, String move){
         //first get the stats of the move
-        return Game.getFileManager().getPower(Game.getFileManager().getAttackFileByName(move));
+        //This includes the :
+        // Power
+        // Attack of Attacking pkmn
+        // Defense of target Pokemon
+        
+        
+        //Modifier is 1 * 1 * 1 * crit? 6.25% chance * STAB * type effectiveness
+        boolean crit = false; //rand between 1 and 100, is true if number is under or equal to 6.25 
+        if((1+AttackRnd.nextInt(100)) < 6.25){
+            crit = true;
+        }
+        int critMod = 1;
+        if(crit){ critMod = 2; }
+        float stabMod = 1F;
+        if(STABModifier(Game.getFileManager().getType(attackingPkmn), Game.getFileManager().getAtkType(Game.getFileManager().getAttackFileByName(move)))){
+            stabMod = 1.5F;
+        }
+        float mod = 1*1*1*critMod*stabMod*this.getTypeEff(Game.getFileManager().getType(enemyPkmn), Game.getFileManager().getAtkType(Game.getFileManager().getAttackFileByName(move)));
+        int pow = Game.getFileManager().getPower(Game.getFileManager().getAttackFileByName(move));
+        int atk = Game.getFileManager().getAtk(attackingPkmn);
+        int def = Game.getFileManager().getDef(enemyPkmn);
+		
+        //this seems normal
+	//Game.getTextHelper().print("POW/ATK/DEF: " + pow + " " + atk + " " + def);
+        
+	float atkdef = atk/def;
+	//Game.getTextHelper().print(String.valueOf(atkdef));
+	//See which calculation is causing the error....
+	float dmg1 = ((2*100)/5) + 2;
+	float dmg2 = dmg1 * pow * atkdef;
+	float dmg3 = (dmg2 / 50) + 2;
+	float dmg = dmg3 * mod;
+        
+        //round dmg to into a long.
+        Game.getTextHelper().print("Stab mod: " + stabMod);
+        Game.getTextHelper().print("Calculated mod: " + mod);
+        Game.getTextHelper().print("Calculated float dmg: " + dmg);
+        Game.getTextHelper().print("Calculated long dmg: " + (long) dmg);
+        return (long) dmg;
     }
 
-    //Sets the enemy pokemon data variables to the next available pokemon.
-    public void resetInfo(){
-        
+    public boolean STABModifier(String pType, String moveType){
+        Game.getTextHelper().print("Attacking pokemon type: [" + pType + "]");
+        Game.getTextHelper().print("Move type: [" + moveType + "]");
+        if(pType.equalsIgnoreCase(moveType)){
+            return true; // 1.5
+        }else{
+            return false; // 1.0
+        }
     }
+    
+    public float getTypeEff(String targetType, String moveType){
+        float ret_result = 0F;
+        //Excluding Dark & Steel types since using gen 1/2 logic.
+        return 1F;
+    }
+    
+    public String getTypeEffMsg(String targetType, String moveType){
+        return "";
+    }
+    
 
 
 }
