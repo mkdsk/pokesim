@@ -3,6 +3,8 @@
 ---
 PokeSim is a text based simulation that attempts to recreate Pokemon battles, whether it be with a single pokemon or a trainer. I have also planned to implement graphics eventually. 
 
+NOTE: This repository is very old and was mostly written when I was 14/15 and had no idea how to properly optimize code. This repo is just here for archiving purposes! Maybe I will rewrite it someday in C++.
+
 # Features
 ---
 - Simulation of Pokemon style turn based battles
